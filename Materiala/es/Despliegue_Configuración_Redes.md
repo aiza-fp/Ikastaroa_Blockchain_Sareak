@@ -353,6 +353,30 @@ QBFT es un protocolo BFT (Byzantine Fault Tolerance) que implementa PoA (prueba 
 
 Vamos a desplegar una red blockchain Hyperledger Besu **preconfigurada** en 4 máquinas virtuales (Ubuntu Server) que pueden comunicarse entre sí y analizaremos su funcionamiento. Tendremos una quinta máquina (Ubuntu Desktop) que hará de máquina de despliegue y servidor web con aplicaciones para monitorizar o hacer uso de la red.
 
+Todo el código fuente se encuentra en https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak
+
+Las máquinas están desplegadas para cada usuario en https://vdi.tknika.eus/login
+
+Para el despliegue vamos a utilizar la máquina denominada 'Ubuntu Desktop' siguiendo estos pasos:
+
+1.- Asegurarnos de que todas las máquinas están encendidas, 5 en total.
+
+2.- En la máquina Ubuntu Desktop arrancar el terminal y ejecutar: 
+
+`git clone https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak.git`
+
+`cd Ikastaroa_Blockchain_Sareak`
+
+3.- Primero comprobamos la conectividad a las máquinas. Para ello con el primer comando añadimos sus claves a la lista de máquinas conocidas y con el segundo comando verificamos que Ansible tiene acceso a ellas:
+
+`ssh-keyscan -t ed25519 -H 192.168.100.1 192.168.100.2 192.168.100.3 192.168.100.4 >> ~/.ssh/known_hosts`
+
+`ansible -i Hedapena/inventory.yml -m ping all --ask-pass`
+
+3.- Si la conectividad a los nodos va bien, ejecutamos un **Playbook de Ansible** para hacer el despliegue completo, introduciendo solamente la contraseña de acceso a las máquinas cuando nos lo pida:
+
+`ansible-playbook -i Hedapena/inventory.yml Hedapena/hedapena-AnsiblePlaybook.yml`
+
 ---
 
 # Parte 4: Configuración de redes Blockchain
