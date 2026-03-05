@@ -4,14 +4,13 @@
 # Example: ansible-playbook -i Hedapena/inventory.yml Hedapena/hedapena-AnsiblePlaybook.yml
 
 # Ask for SSH password once at start; same password is used for all servers.
-- vars_prompt:
-    - name: ssh_password
-      prompt: "SSH password for user isard (same for all servers)"
-      private: true
-
 - name: Install Docker and Docker Compose on all servers
   hosts: all_servers
   become: true
+  vars_prompt:
+    - name: ssh_password
+      prompt: "SSH password for user isard (same for all servers)"
+      private: true
   vars:
     ansible_password: "{{ ssh_password }}"
   tasks:
