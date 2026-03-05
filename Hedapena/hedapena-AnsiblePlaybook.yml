@@ -1,12 +1,17 @@
 # Hedapena Ansible Playbook: deploy Besu nodes and web server.
-# Run from repository root. Requires: ansible.posix collection
-#   (install with: ansible-galaxy collection install ansible.posix).
-# SSH: use key-based auth (no password). Become (sudo) password is prompted via -K.
+# Run from repository root. Requires: ansible.posix collection; sshpass (for SSH password).
+# You are prompted once for SSH password; use -K for become (sudo) password.
 # Example: ansible-playbook -i Hedapena/inventory.yml Hedapena/hedapena-AnsiblePlaybook.yml --ask-become-pass
 
 - name: Install Docker and Docker Compose on all servers
   hosts: all_servers
   become: true
+  vars_prompt:
+    - name: ssh_password
+      prompt: "SSH password for user isard (same for all servers)"
+      private: true
+  vars:
+    ansible_password: "{{ ssh_password }}"
   tasks:
     # Install Docker and Compose v2 from Ubuntu repos (docker.io, docker-compose-v2).
     - name: Install Docker and Docker Compose v2
@@ -33,6 +38,7 @@
   hosts: webserver
   become: true
   vars:
+    ansible_password: "{{ ssh_password }}"
     repo_root: "{{ playbook_dir }}/.."
   tasks:
     - name: Create besu directory in isard home
@@ -71,6 +77,8 @@
 - name: Deploy Hedapena to Besu nodes and start each node
   hosts: besu_nodes
   become: true
+  vars:
+    ansible_password: "{{ ssh_password }}"
   tasks:
     - name: Create besu directory in isard home
       ansible.builtin.file:
