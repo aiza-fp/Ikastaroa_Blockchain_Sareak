@@ -357,7 +357,7 @@ Todo el código fuente se encuentra en https://github.com/aiza-fp/Ikastaroa_Bloc
 
 Las máquinas están desplegadas para cada usuario en https://vdi.tknika.eus/login
 
-Las cuatro máquinas virtuales denominadas 'Besu nodo 1-4' son máquinas Ubuntu Server donde lo único que se ha configurado es la dirección IP fija. Lo que necesitemos instalar para la puesta en marcha como nodos de la red blockchain se hará en el despliegue mediante **Ansible**.
+Las cuatro máquinas virtuales denominadas 'Besu nodo 1-4' son máquinas Ubuntu Server donde lo único que se ha configurado es la dirección IP fija. Lo que necesitemos instalar para la puesta en marcha de los nodos de la red blockchain se hará en el despliegue mediante **Ansible**.
 
 La máquina virtual denominada 'Ubuntu Desktop' es un Ubuntu de escritorio donde lo único que se ha configurado es la dirección IP fija y se ha instalado Ansible para hacer el despliegue. Parte del despliegue se hace en la misma máquina, que actúa como servidor web para aplicaciones que hacen uso de la blockchain.
 
@@ -390,6 +390,38 @@ Si todo ha ido bien al final de la tarea obtendremos un mensaje parecido a éste
 Podemos comprobar que la red está en marcha accediendo a la dirección `ethstats.localhost` en el navegador del Ubuntu Desktop. Veremos algo así:
 
 ![Ethstats](../baliabideak/ethstats.jpg)
+
+Ésto es lo que ha ocurrido en el proceso de despliegue con Ansible:
+
+1. Antes de nada todo el código necesario para el despliegue e instalación lo hemos descargado de [Github](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak) con el el comando `git clone ...`.
+
+2. Las máquinas implicadas en el despliegue están definidas en el fichero [`Hedapena/inventory.yml`](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak/blob/main/Hedapena/inventory.yml) del repositorio. Ahí es donde se define su IP y están clasificadas por grupos (besu_nodes, webserver) para diferenciarlos a la hora de desplegar los contenidos.
+
+3. Como Ansible necesita acceso *ssh* a las máquinas, mediante el comando `ssh-keyscan` hemos añadido las máquinas remotas a la lista de máquinas conocidas y con el comando `ansible -i Hedapena/inventory.yml -m ping all --ask-pass` hemos comprobado que tiene acceso a las máquinas implicadas en el despliegue.
+
+4. Ejecutamos el **playbook** de Ansible definido en [`Hedapena/hedapena-AnsiblePlaybook.yml`](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak/blob/main/Hedapena/hedapena-AnsiblePlaybook.yml). El playbook consiste el llevar a cabo tres tareas:
+
+   4.1. Instalar Docker y Docker Compose en todas las máquinas: mediante la propiedad 'hosts: all_servers' se indica que afecta a todas las máquinas definidas en el inventario. Se solicita la contraseña del usuario 'isard' y se ejecutan 4 subtareas:
+
+    - Guardar la contraseña en una variable para no tener que volver a pedirla.
+    - Instalar los paquetes docker.io y docker-compose-v2.
+    - Iniciar el servicio Docker.
+    - Añadir el usuario 'isard' al grupo 'docker'.
+  
+   4.2. Desplegar el servidor web e inicar los servicios: mediante la propiedad 'hosts: webserver' se indica que las tareas asociadas se van a llevar a cabo solamente en las máquinas que pertenezcan al grupo webserver, en este caso la máquina con IP 192.168.100.10 que es la misma que estamos utilizando para realizar el despliegue. Las subtareas son:
+    - Crear la carpeta 'besu'.
+    - Copiar la carpeta 'WebServer' dentro de la carpeta 'besu' en destino.
+    - Copiar la carpeta 'Pilotoak' dentro de la carpeta 'besu' en destino.
+    - Asegurarse de que la carpeta 'besu' en destino y todas las subcarpetas pertenecen al usuario 'isard'.
+    - Mediante Docker iniciar el servidor web y otros servicios definidos en el fichero WebServer/docker-compose.yml
+
+   4.3. Desplegar Hyperledger Besu el los cuatro nodos: mediante la propiedad 'hosts: besu_nodes' se indica que las tareas asociadas se van a llevar a cabo solamente en las máquinas que pertenezcan al grupo besu_nodes. Las subtareas son:
+    - Crear la carpeta 'besu'.
+    - Copiar la carpeta actual (Hedapena) a 'besu' en destino.
+    - Asegurarse de que la carpeta 'besu' en destino y todas las subcarpetas pertenecen al usuario 'isard'.
+    - Mediante Docker iniciar Besu en cada máquina. En este caso, como para cada máquina hay que desplegar un fichero distinto, se hace referencia al número en el nombre de fichero con el número de índice definido en `inventory.yml`.
+
+En la próxima sección estudiaremos dónde se han configurado los distintos aspectos de la red blockchain desplegada.
 
 ---
 
