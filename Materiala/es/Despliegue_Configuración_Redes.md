@@ -357,6 +357,12 @@ Todo el código fuente se encuentra en https://github.com/aiza-fp/Ikastaroa_Bloc
 
 Las máquinas están desplegadas para cada usuario en https://vdi.tknika.eus/login
 
+Las cuatro máquinas virtuales denominadas 'Besu nodo 1-4' son máquinas Ubuntu Server donde lo único que se ha configurado es la dirección IP fija. Lo que necesitemos instalar para la puesta en marcha como nodos de la red blockchain se hará en el despliegue mediante **Ansible**.
+
+La máquina virtual denominada 'Ubuntu Desktop' es un Ubuntu de escritorio donde lo único que se ha configurado es la dirección IP fija y se ha instalado Ansible para hacer el despliegue. Parte del despliegue se hace en la misma máquina, que actúa como servidor web para aplicaciones que hacen uso de la blockchain.
+
+> **Nota:** Pega los comandos con facilidad en la máquina virtual visualizándola con SPICE y pegando con Ctrl. + Shift + V.
+
 Para el despliegue vamos a utilizar la máquina denominada 'Ubuntu Desktop' siguiendo estos pasos:
 
 1.- Asegurarnos de que todas las máquinas están encendidas, 5 en total.
@@ -373,13 +379,17 @@ Para el despliegue vamos a utilizar la máquina denominada 'Ubuntu Desktop' sigu
 
 `ansible -i Hedapena/inventory.yml -m ping all --ask-pass`
 
-3.- Si la conectividad a los nodos va bien, ejecutamos un **Playbook de Ansible** para hacer el despliegue completo, introduciendo solamente la contraseña de acceso a las máquinas cuando nos lo pida:
+4.- Si la conectividad a los nodos va bien, ejecutamos un **Playbook de Ansible** para hacer el despliegue completo, introduciendo solamente la contraseña de acceso a las máquinas cuando nos lo pida:
 
 `ansible-playbook -i Hedapena/inventory.yml Hedapena/hedapena-AnsiblePlaybook.yml --ask-become-pass`
 
 Si todo ha ido bien al final de la tarea obtendremos un mensaje parecido a éste:
 
 ![Ansible OK](../baliabideak/ansible_ok.jpg)
+
+Podemos comprobar que la red está en marcha accediendo a la dirección `ethstats.localhost` en el navegador del Ubuntu Desktop. Veremos algo así:
+
+![Ethstats](../baliabideak/ethstats.jpg)
 
 ---
 
