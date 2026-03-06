@@ -1,5 +1,5 @@
 # Hedapena Ansible Playbook: deploy Besu nodes and web server.
-# Run from repository root. Requires: ansible.posix collection; sshpass (for SSH password).
+# Run from repository root. Requires: sshpass (for SSH password).
 # You are prompted once for SSH password; use -K for become (sudo) password.
 # Example: ansible-playbook -i Hedapena/inventory.yml Hedapena/hedapena-AnsiblePlaybook.yml --ask-become-pass
 
@@ -55,16 +55,18 @@
         group: "{{ ansible_user }}"
         mode: "0755"
 
-    # Synchronize copies from control node (src) to remote host (dest).
+    # Copy from control node to remote (uses Ansible connection, works with password auth).
     - name: Deploy WebServer files to ~/besu/WebServer
-      ansible.posix.synchronize:
+      ansible.builtin.copy:
         src: "{{ repo_root }}/Garapena/WebServer/"
         dest: "{{ deploy_home }}/besu/WebServer/"
+        mode: preserve
 
     - name: Deploy Pilotoak files to ~/besu/Pilotoak
-      ansible.posix.synchronize:
+      ansible.builtin.copy:
         src: "{{ repo_root }}/Garapena/Pilotoak/"
         dest: "{{ deploy_home }}/besu/Pilotoak/"
+        mode: preserve
 
     - name: Set ownership of besu directory to ansible_user
       ansible.builtin.file:
@@ -94,15 +96,12 @@
         group: "{{ ansible_user }}"
         mode: "0755"
 
-    # Synchronize copies from control node (Hedapena/) to remote ~/besu, excluding playbook/inventory.
-    - name: Deploy Hedapena files to ~/besu (exclude playbook and inventory)
-      ansible.posix.synchronize:
+    # Copy Hedapena directory to remote (includes all files; uses Ansible connection, works with password auth).
+    - name: Deploy Hedapena files to ~/besu
+      ansible.builtin.copy:
         src: "{{ playbook_dir }}/"
         dest: "{{ deploy_home }}/besu/"
-        rsync_opts:
-          - "--exclude=hedapena-AnsiblePlaybook.yml"
-          - "--exclude=inventory.yml"
-          - "--exclude=.git"
+        mode: preserve
 
     - name: Set ownership of besu directory to ansible_user
       ansible.builtin.file:
