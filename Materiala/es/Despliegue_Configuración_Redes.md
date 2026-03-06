@@ -377,6 +377,10 @@ Para el despliegue vamos a utilizar la máquina denominada 'Ubuntu Desktop' sigu
 
 `ansible-playbook -i Hedapena/inventory.yml Hedapena/hedapena-AnsiblePlaybook.yml --ask-become-pass`
 
+Si todo ha ido bien al final de la tarea obtendremos un mensaje parecido a éste:
+
+![Ansible OK](../baliabideak/ansible_ok.jpg)
+
 ---
 
 # Parte 4: Configuración de redes Blockchain
