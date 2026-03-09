@@ -27,7 +27,10 @@ data-path="/var/lib/besu/QBFT-Network/Node/data"
 # =============================================================================
 # Puerto TCP/UDP para la comunicación entre nodos de la red.
 p2p-port="30303"
-# Dirección en la que el nodo escucha conexiones P2P. 0.0.0.0 permite conexiones desde cualquier interfaz.
+# Dirección IP en la que el nodo escucha conexiones P2P entrantes desde otros nodos de la red. 
+# Si se establece en 0.0.0.0, el nodo aceptará conexiones P2P provenientes de cualquier interfaz de red disponible en el equipo, 
+# permitiendo que otros nodos de la red se conecten sin restricciones de interfaz local. 
+# Esto es útil para nodos que deben estar accesibles desde diferentes redes o subredes.
 p2p-host="0.0.0.0"
 
 # =============================================================================
@@ -35,7 +38,7 @@ p2p-host="0.0.0.0"
 # =============================================================================
 # Habilita o deshabilita el servicio JSON-RPC por HTTP.
 rpc-http-enabled=true
-# Dirección en la que escucha el servidor HTTP. 0.0.0.0 permite conexiones remotas.
+# Dirección en la que escucha el servidor HTTP. 0.0.0.0 acepta conexiones P2P provenientes de cualquier interfaz de red disponible en el equipo.
 rpc-http-host="0.0.0.0"
 # Puerto TCP en el que escucha el JSON-RPC HTTP (por defecto 8545).
 rpc-http-port="8545"
@@ -49,7 +52,7 @@ rpc-http-cors-origins=["all"]
 # =============================================================================
 # Habilita o deshabilita el servicio JSON-RPC por WebSocket.
 rpc-ws-enabled=true
-# Dirección en la que escucha el WebSocket. 0.0.0.0 permite conexiones remotas.
+# Dirección en la que escucha el servidor HTTP. 0.0.0.0 acepta conexiones P2P provenientes de cualquier interfaz de red disponible en el equipo.
 rpc-ws-host="0.0.0.0"
 # Puerto TCP en el que escucha el JSON-RPC WebSocket (por defecto 8546).
 rpc-ws-port="8546"
@@ -77,15 +80,6 @@ metrics-enabled=true
 metrics-host="127.0.0.1"
 # Puerto en el que Prometheus accede a las métricas de Besu (por defecto 9545).
 metrics-port=9545
-
-# =============================================================================
-# Privacidad (deshabilitado por defecto)
-# =============================================================================
-# Habilita transacciones privadas (requiere Tessera). Descomentar para activar.
-#privacy-enabled=true
-#privacy-url=http://tessera_nodeX:9102
-#privacy-multi-tenancy-enabled=true
-#privacy-marker-transaction-signing-key-file="/var/lib/besu/QBFT-Network/Node/data/key"
 
 # =============================================================================
 # Autenticación JWT para RPC
