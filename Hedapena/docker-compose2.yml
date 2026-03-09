@@ -20,12 +20,6 @@ services:
       - 30303:30303
       # Puerto para comunicación P2P entre nodos (UDP)
       - 30303:30303/udp
-      # Puerto para la API GraphQL HTTP (por defecto 8547)
-      - 8547:8547
-      # Puerto para la API de JSON-RPC del motor (HTTP, por defecto 8550)
-      - 8550:8550
-      # Puerto para la API de JSON-RPC del motor (WebSocket, por defecto 8551)
-      - 8551:8551
     # Comando de inicio de Besu con la ruta al archivo de configuración
     command: --config-file=/var/lib/besu/QBFT-Network/configNodes/node-config.toml
     # Variables de entorno
