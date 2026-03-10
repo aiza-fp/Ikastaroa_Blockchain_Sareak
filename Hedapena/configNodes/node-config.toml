@@ -151,10 +151,3 @@ tx-pool-limit-by-account-percentage=0.15
 # =============================================================================
 # Número máximo de conexiones HTTP JSON-RPC simultáneas. Por defecto 80.
 rpc-http-max-active-connections=300
-
-# =============================================================================
-# Bonsai / Forest
-# =============================================================================
-# Con sync-mode=FULL debe estar en false. Limita los logs de Bonsai Trie retenidos.
-# No sería neceario en nuestro caso porque estamos con FOREST Y sync-mode=FULL
-bonsai-limit-trie-logs-enabled=false
