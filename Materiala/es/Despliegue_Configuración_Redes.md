@@ -357,7 +357,7 @@ Todo el código fuente se encuentra en https://github.com/aiza-fp/Ikastaroa_Bloc
 
 Las máquinas están desplegadas para cada usuario en https://vdi.tknika.eus/login
 
-Las cuatro máquinas virtuales denominadas 'Besu nodo 1-4' son máquinas Ubuntu Server donde lo único que se ha configurado es la dirección IP fija. Lo que necesitemos instalar para la puesta en marcha de los nodos de la red blockchain se hará en el despliegue mediante **Ansible**.
+Las cuatro máquinas virtuales denominadas 'Besu nodo 1-4' son máquinas Ubuntu Server donde lo único que se ha configurado es la dirección IP fija y el nombre del servidor. Lo que necesitemos instalar para la puesta en marcha de los nodos de la red blockchain se hará en el despliegue mediante **Ansible**.
 
 La máquina virtual denominada 'Ubuntu Desktop' es un Ubuntu de escritorio donde lo único que se ha configurado es la dirección IP fija y se ha instalado Ansible para hacer el despliegue. Parte del despliegue se hace en la misma máquina, que actúa como servidor web para aplicaciones que hacen uso de la blockchain.
 
@@ -421,13 +421,58 @@ Podemos comprobar que la red está en marcha accediendo a la dirección `ethstat
     - Asegurarse de que la carpeta 'besu' en destino y todas las subcarpetas pertenecen al usuario 'isard'.
     - Mediante Docker iniciar Besu en cada máquina. En este caso, como para cada máquina hay que desplegar un fichero distinto, se hace referencia al número en el nombre de fichero con el número de índice definido en `inventory.yml`.
 
+Como ejercicios se plantean:
+
+1. Seguir todos los pasos descritos para desplegar la red blockchain preconfigurada.
+2. Acceder a uno de los nodos (mediante ssh desde el Ubuntu Desktop para mayor comodidad) y echar abajo el servicio manualmente para observar que la red sigue creando bloques.
+    * Ejecuta `ssh isard@192.168.100.1` y dentro de la carpeta besu `docker compose -f docker-compose1.yml down`
+    * Observa Ethstats en el navegador.
+3. Acceder a otro de los nodos y echar abajo el servicio para observar que la red ya no produce más bloques.
+    * Ejecuta `ssh isard@192.168.100.2` y dentro de la carpeta besu `docker compose -f docker-compose2.yml down`
+    * Observa Ethstats en el navegador.
+4. Reactivar el servicio en los dos nodos para ver que la red ha retomado la creación de bloques (puede tardar un tiempo en retomar la creación de nuevos bloques, unos 5 minutos en este entorno).
+    * Ejecuta `ssh isard@192.168.100.1` y dentro de la carpeta besu `docker compose -f docker-compose1.yml up -d`
+    * Ejecuta `ssh isard@192.168.100.2` y dentro de la carpeta besu `docker compose -f docker-compose2.yml up -d`
+    * Observa Ethstats en el navegador.
+
+Para cada apartado, entrega una captura del Ethstats sacada de forma consecutiva, donde se observe el estado descrito.
+
+**Desplegar un contratro de prueba?**
+
 En la próxima sección estudiaremos dónde se han configurado los distintos aspectos de la red blockchain desplegada.
 
 ---
 
 # Parte 4: Configuración de redes Blockchain
 
-## 4.1 Comunicación entre nodos
+En nuestro caso estamos desplegando una red Hyperledger Besu en cuatro nodos. Como se ha visto en el apartado anterior, el despliegue en cada nodo consiste en iniciar un servicio Docker definido en cada fichero **docker-composeX.yml**.
+
+En el fichero [docker-composeX.yml](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak/blob/main/Hedapena/docker-compose1.yml) se define la imagen Docker que se va a desplegar en el nodo (en los comentarios se describe lo que hace cada línea de configuración) y sus características.
+
+Partiendo de este fichero veamos su relación con los demás ficheros fundamentales de la configuración:
+
+- **[node-config.toml](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak/blob/main/Hedapena/configNodes/node-config.toml)**: el fichero de configuración que define las características del nodo. El significado de cada parámetro viene brevemente explicado en un comentario. Es el núcleo de la configuración de cada nodo y como vemos en él se hace referencia a los siguientes ficheros:
+  - **genesis.json**: fichero que define el bloque inicial y la configuración de la cadena.
+  - **publicRSAKeyOperator.pem**: clave pública usada para verificar los tokens de acceso JWT.
+  - **static-nodes.json**: fichero con la lista de nodos conocidos con los que conectarse al arrancar.
+  - **nodes_permissions_config.toml**: fichero con las direcciones de los nodos permitidos en la red.
+  - **accounts_permissions_config.toml**: fichero con las cuentas que tienen permiso para enviar transacciones a la red (desactivado por defecto en nuestro caso).
+
+- **networkFiles/keys/keyX**: clave privada de cada nodo que lo identifica de forma única.
+
+Para cada nodo los ficheros están estructurados en la carpeta de despliegue (besu) de esta manera:
+
+![Tree](../baliabideak/tree.jpg)
+
+
+## 4.1 Creación de ficheros con herramientas de Besu:
+
+### Instalación de Besu.
+### Generar nuevas direcciones
+### Generar genesis.json y claves de nodos
+### Configuración de los nodos (carpetas configNodes y networkFiles)
+
+## 4.2 Comunicación entre nodos
 
 ### Protocolo P2P (peer-to-peer)
 
@@ -454,9 +499,7 @@ Hyperledger Besu expone:
 - **JSON-RPC (HTTP):** Para consultas y envío de transacciones.
 - **WebSockets:** Para suscripciones en tiempo real (nuevos bloques, logs).
 
----
-
-## 4.2 Seguridad en redes Blockchain
+## 4.3 Seguridad en redes Blockchain
 
 ### Criptografía
 
@@ -478,10 +521,10 @@ En redes privadas:
 - Control de cuentas permitidas: restringir que cuentas pueden operar en la red a la hora de hacer transacciones.
 - Gestión de validadores QBFT (propuestas y votaciones on-chain).
 - Acceso a APIs de administración de la red mediante JWT (JSON Web Tokens).
+  - Creación de tokens.
+  - Herramienta para operar con la API (websocat)
 
----
-
-## 4.3 Monitorización y mantenimiento
+## 4.4 Monitorización y mantenimiento
 
 ### Indicadores clave
 
@@ -504,9 +547,25 @@ En redes privadas:
 - Backup de datos (con nodo detenido o snapshots de volumen).
 - Añadir/eliminar validadores siguiendo el proceso de votación QBFT.
 
+**Ejercicio: añadir un quinto nodo a la red y convertirlo en validador con votos en los demás nodos.**
+
 ---
 
 # Parte 5: Configuración y despliegue de una red Blockchain
+
+Este apartado es un ejercicio final que consiste en hacer un nuevo despliegue teniendo en cuenta todo lo todo lo visto hasta ahora. Las características del despliegue a realizar son éstas:
+- 5 nodos (las direcciones IP son 192.168.100.1-5).
+- Las claves propias de cada nodo son nuevas y distintas entre sí.
+- Los 5 nodos exisitirán desde el principio como validadores y solamente ellos pueden participar en la red.
+- El tiempo entre bloques será de 15 segundos.
+
+Ten en cuenta que prácticamente todos los ficheros de configuración analizados en el apartado anterior se verán afectados.
+
+El despliegue se podría hacer manualmente (copiando los ficheros necesarios a cada nodo y desplegándolo) pero se recomienda hacer pequeñas modificaciones a los ficheros existentes de despliegue con Ansible (*hedapena-AnsiblePlaybook.yml* y *inventory.yml*) para adaptarlo al ejercicio. 
+
+Puedes 'recrear' las máquinas para que vuelvan a su estado inicial y hacer un despliegue limpio (se eliminará lo que esté desplegado o modificado):
+
+![Recreate](../baliabideak/recreate.jpg)
 
 ---
 
