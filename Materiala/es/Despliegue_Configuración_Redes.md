@@ -468,12 +468,16 @@ Para cada nodo los ficheros están estructurados en la carpeta de despliegue (be
 ## 4.1 Creación de ficheros con herramientas de Besu:
 
 ### Instalación de Besu.
+*Pendiente*
 ### Generar nuevas direcciones
+*Pendiente*
 ### Generar genesis.json y claves de nodos
+*Pendiente*
 ### Configuración de los nodos (carpetas configNodes y networkFiles)
+*Pendiente*
 
 ## 4.2 Comunicación entre nodos
-
+*Pendiente desarrollar*
 ### Protocolo P2P (peer-to-peer)
 
 - Los nodos se conectan entre sí formando una red mesh.
@@ -499,6 +503,8 @@ Hyperledger Besu expone:
 - **JSON-RPC (HTTP):** Para consultas y envío de transacciones.
 - **WebSockets:** Para suscripciones en tiempo real (nuevos bloques, logs).
 
+*Pendiente desarrollar*
+
 ## 4.3 Seguridad en redes Blockchain
 
 ### Criptografía
@@ -506,12 +512,6 @@ Hyperledger Besu expone:
 - **ECDSA:** Firmas digitales para transacciones y bloques.
 - **Keccak-256:** Función hash utilizada (compatible con Ethereum).
 - Las claves privadas nunca deben exponerse; las direcciones derivan de la clave pública.
-
-### Gestión de claves
-
-- Cada nodo y cuenta tiene una clave privada que controla su identidad.
-- Buenas prácticas: no versionar claves, usar volúmenes protegidos, rotación periódica.
-- En producción: integración con Vault (Hashicorp, Azure Key Vault) para que el nodo no almacene la clave en texto plano.
 
 ### Autenticación y autorización
 
@@ -523,6 +523,7 @@ En redes privadas:
 - Acceso a APIs de administración de la red mediante JWT (JSON Web Tokens).
   - Creación de tokens.
   - Herramienta para operar con la API (websocat)
+*Pendiente desarrollar*
 
 ## 4.4 Monitorización y mantenimiento
 
