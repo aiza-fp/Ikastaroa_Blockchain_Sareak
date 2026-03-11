@@ -57,7 +57,7 @@ rpc-ws-host="0.0.0.0"
 # Puerto TCP en el que escucha el JSON-RPC WebSocket (por defecto 8546).
 rpc-ws-port="8546"
 # APIs JSON-RPC expuestas por WebSocket (incluye ADMIN, QBFT, PERM para operaciones administrativas).
-rpc-ws-api=["ADMIN","DEBUG","MINER","ETH","TXPOOL","NET","TRACE","WEB3","EEA","PRIV","PLUGINS","QBFT","PERM"]
+rpc-ws-api=["ADMIN","DEBUG","MINER","ETH","TXPOOL","NET","TRACE","WEB3","PLUGINS","QBFT","PERM"]
 
 # =============================================================================
 # Identificador de red
