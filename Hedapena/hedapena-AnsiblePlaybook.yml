@@ -107,6 +107,8 @@
         dest: "{{ deploy_home }}/besuNode/networkFiles/static-nodes.json"
       - src: "{{ hedapena_root }}/networkFiles/nodes_permissions_config.toml"
         dest: "{{ deploy_home }}/besuNode/networkFiles/nodes_permissions_config.toml"
+      - src: "{{ hedapena_root }}/networkFiles/accounts_permissions_config.toml"
+        dest: "{{ deploy_home }}/besuNode/networkFiles/accounts_permissions_config.toml"
       - src: "{{ hedapena_root }}/networkFiles/JWTkeys/publicRSAKeyOperator.pem"
         dest: "{{ deploy_home }}/besuNode/networkFiles/JWTkeys/publicRSAKeyOperator.pem"
     # Ficheros específicos del nodo, seleccionados mediante node_index desde inventory.yml.
