@@ -12,14 +12,10 @@ Ejecutamos:
 
 - Revisar los script de creación de las bases de datos de cada aplicación web por si se quieren modificar los usuarios o contraseñas iniciales.
 
-- Revisar las URL de los ficheros de configuración del nginx (carpeta *conf.d*) por si se quieren modificar. Para producción utilizar las configuraciones de la carpeta *nginx/conf.d/produkzioa* (basta con modificar la ruta en el fichero *nginx.conf*).
+- Revisar las URL de los ficheros de configuración del nginx (carpeta *conf.d*) por si se quieren modificar.
 
 ## Los servicios que se despliegan
 
-- **ethstats**: el servidor de Ethereum Stats, situado en ../Pilotoak/Erremintak/ethstats. Estará accesible en el servidor accediendo al puerto definido en el fichero *docker-compose.yml*.
-- **mailserver**: el servidor de correo electrónico. Estará accesible en el servidor accediendo a los puertos definidos en el fichero *docker-compose.yml*.
-- **ziurtagiriak**: la aplicación Ziurtagiriak, situada en ../Pilotoak/ZiurtagiriakAPP. Estará accesible en el servidor accediendo con los nombres configurados en los ficheros de la carpeta *nginx/conf.d/*.
-- **etiketa**: la aplicación Etiqueta Inteligente, situada en ../Pilotoak/EtiketaAPP. Estará accesible en el servidor accediendo con los nombres configurados en los ficheros de la carpeta *nginx/conf.d/*.
-- **formakuntza**: la aplicación Formakuntza, situada en ../Pilotoak/FormakuntzakAPP. Estará accesible en el servidor accediendo con los nombres configurados en los ficheros de la carpeta *nginx/conf.d/*.
-- **webserver**: el servidor que hace de proxy para acceder a uno u otro servicio dependiendo del nombre con el que hayamos accedido. Escucha en el puerto 80.
-- **mariadb**: base de datos MariaDB que necesita la aplicación Ziurtagiriak pero que se podría reutilizar para cualquier otra aplicación que necesite una base de datos.
+- **ethstats**: el servidor de Ethereum Stats, situado en la carpeta **ethstats-server**. Estará accesible en el servidor accediendo al puerto definido en el fichero *docker-compose.yml*.
+- **esploratzaile**: la aplicación Esploratzaile, situada en ../Pilotoak/EsploratzaileAPP. Estará accesible en el servidor accediendo con los nombres configurados en el fichero de la carpeta *nginx/conf.d/EsploratzaileAPP.conf*.
+- **webserver**: el servidor nginx que hace de proxy para acceder a uno u otro servicio dependiendo del nombre con el que hayamos accedido. Escucha en el puerto 80.

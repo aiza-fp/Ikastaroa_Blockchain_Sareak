@@ -449,7 +449,7 @@ Como ejercicios se plantean:
     * Entrega una captura del Ethstats con todos los nodos en marcha y generando bloques (el número de bloque tendrá que ser mayor que el de la captura del apartado anterior y 'Last block' con menos de 10 segundos).
 
 5. Despliega un Smart Contract. Para comprobar que nuestra red ya está operativa y se pueden hacer transacciones, vamos a ejecutar un script que despliega e invoca un contrato ya compilado:
-    * Ve a la carpeta de contratos con `cd ~/besu/Kontratuak/Formularioak`.
+    * Ve a la carpeta de contratos con `cd ~/besu/Kontratuak/Formularioak`. Ahí se encuentran los ficheros .sol, .abi y .bytecode de un contrato llamado Formularioak.
     * Ejecuta `python ./hedatu_erabili.py`.
     * Identifica en los mensajes la dirección donde se ha desplegado el contrato y cópialo del terminal (Ctrl. + Mayúsc. + C).
     * Abre con el navegador el fichero `trazabilitatea.html` que se encuentra en la misma carpeta e introduce la dirección del contrato. El número de formulario es 1.
@@ -487,11 +487,34 @@ Para cada nodo los ficheros están estructurados en la carpeta de despliegue (be
 
 ## 4.1 Creación de ficheros con herramientas de Besu:
 
-### Instalación de Besu.
-*Pendiente*
-### Generar nuevas direcciones
-*Pendiente*
+### Software necesario en la máquina que va a configurar y desplegar.
+
+La máquina Ubuntu Desktop con la que estamos trabajando ya trae instalado lo siguiente:
+
+- Ansible
+- Java 25
+- Hyperledger Besu 26.2.0 (el software con las herramientas, no un nodo)
+- Node.js 24.14
+
+### Generación de nuevas direcciones
+
+Las direcciones en blockchain funcionan de forma similar a un número de cuenta bancaria, pero en redes como Ethereum o Besu. Una dirección identifica de manera única a un usuario, contrato u entidad dentro de la red: es una cadena de caracteres generada a partir de una clave pública, que a su vez solo puede ser utilizada por quien conoce la clave privada correspondiente. 
+
+Estas direcciones permiten enviar y recibir fondos, gestionar permisos, o ejecutar contratos inteligentes. Resultan esenciales para la seguridad y el control de acceso, porque solo el propietario de la clave privada puede autorizar operaciones sobre esa dirección (por ejemplo, firmar transacciones).
+
+Con Besu instalado podemos crear tantas nuevas direcciones como queramos para asignarles una cantidad de ETH inicial en el bloque génesis. Podemos hacerlo con estos comandos:
+
+`besu --data-path=./address_1 public-key export --to=./address_1/key.pub`
+
+`besu --data-path=./address_1 public-key export-address --to=./address_1/address`
+
+Esto nos va a crear en la carpeta 'address_1' tres ficheros:
+- La clave privada (key).
+- La clave pública (key.pub).
+- La dirección (address, se deriva de la clave pública).
+
 ### Generar genesis.json y claves de nodos
+
 *Pendiente*
 ### Configuración de los nodos (carpetas configNodes y networkFiles)
 *Pendiente*

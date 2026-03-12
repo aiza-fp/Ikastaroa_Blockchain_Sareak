@@ -6,39 +6,16 @@ Se puede saltar al apartado 3 si se quiere probar la configuración por defecto 
 
 ## 1.- Software necesario
 
-### 1.1.- Todas las máquinas
+### Máquina que va a configurar y desplegar:
+- Ubuntu actualizado.
+- Ansible instalado.
+- Java (`sudo apt install openjdk-25-jdk-headless`)
+- Hyperledger Besu (`wget https://github.com/hyperledger/besu/releases/download/26.2.0/besu-26.2.0.tar.gz`)
+- Node.js (`wget https://nodejs.org/dist/v24.14.0/node-v24.14.0-linux-x64.tar.xz`)
+
+### Máquina en la que va a desplegar Besu:
 - Ubuntu Server actualizado.
 - [OpenSSH](https://ubuntu.com/server/docs/openssh-server)
-- [Docker instalado](https://docs.docker.com/engine/install/ubuntu/).
-- Éste repositorio clonado: `git clone https://github.com/Tknika/Blockchain-FPEuskadi.git`
-
-### 1.2.- Máquina principal (la que despliega)
-- Java:
-
-`sudo apt install openjdk-21-jdk-headless`
-
-- Hyperledger Besu:
-
-`wget https://github.com/hyperledger/besu/releases/download/24.10.0/besu-24.10.0.tar.gz`
-
-`tar -xvzf ./besu-24.10.0.tar.gz`
-
-- Node.js:
-
-`wget https://nodejs.org/dist/v20.10.0/node-v20.10.0-linux-x64.tar.xz`
-
-`tar -xvf ./node-v20.10.0-linux-x64.tar.xz`
-
-Añadir esto al fichero *.profile* del usuario Linux para que se incluyan los binarios en el PATH:
-> 
-	if [ -d "$HOME/node-v20.10.0-linux-x64/bin" ] ; then
-  		PATH="$PATH:$HOME/node-v20.10.0-linux-x64/bin"
-	fi
-	if [ -d "$HOME/besu-24.10.0/bin" ] ; then
-  		PATH="$PATH:$HOME/besu-24.10.0/bin"
-	fi
-
-Aplicar esos cambios con `source .profile`
 
 ## 2.- Configuración inicial
 
