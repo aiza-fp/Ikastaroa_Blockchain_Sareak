@@ -3,18 +3,20 @@
 Genera un conjunto de claves RSA y su JWT asociado.
 
 Uso:
-    python sortu_tenant_JWT.py 1
+    python sortu_JWT.py 1
 
 Salida en la carpeta actual:
     ./1/
         privateRSAKeyOperator1.pem
         publicRSAKeyOperator1.pem
         JWT_1
-"""
-"""
+
+
+Dependencias:
 pip install pyjwt[crypto]
 
-Uso:
+
+Configuración de permisos:
 Cada usuario tiene una lista de cadenas de permisos que definen los métodos a los que puede acceder. Para otorgar acceso:
 
     Para todos los métodos de la API, especifica ["*:*"].

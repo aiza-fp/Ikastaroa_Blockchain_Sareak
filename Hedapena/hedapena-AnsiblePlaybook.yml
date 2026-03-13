@@ -94,7 +94,6 @@
       - "{{ deploy_home }}/besuNode/networkFiles"
       - "{{ deploy_home }}/besuNode/networkFiles/keys"
       - "{{ deploy_home }}/besuNode/networkFiles/JWTkeys"
-      - "{{ deploy_home }}/besuNode/networkFiles/TenantKeys"
       - "{{ deploy_home }}/besuNode/Node"
       - "{{ deploy_home }}/besuNode/Node/data"
     # Ficheros comunes a todos los nodos validadores.
@@ -119,10 +118,6 @@
         dest: "{{ deploy_home }}/besuNode/networkFiles/keys/key{{ node_index }}"
       - src: "{{ hedapena_root }}/networkFiles/JWTkeys/JWT_{{ node_index }}"
         dest: "{{ deploy_home }}/besuNode/networkFiles/JWTkeys/JWT_{{ node_index }}"
-      - src: "{{ hedapena_root }}/networkFiles/TenantKeys/tenantKey{{ node_index }}.key"
-        dest: "{{ deploy_home }}/besuNode/networkFiles/TenantKeys/tenantKey{{ node_index }}.key"
-      - src: "{{ hedapena_root }}/networkFiles/TenantKeys/tenantKey{{ node_index }}.pub"
-        dest: "{{ deploy_home }}/besuNode/networkFiles/TenantKeys/tenantKey{{ node_index }}.pub"
   tasks:
     - name: Crear la estructura de carpetas necesaria en ~/besuNode
       ansible.builtin.file:
