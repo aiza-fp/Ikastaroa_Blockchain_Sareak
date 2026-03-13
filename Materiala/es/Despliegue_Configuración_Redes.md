@@ -499,7 +499,7 @@ Partiendo de este fichero veamos su relación con los demás ficheros fundamenta
 
 - **networkFiles/keys/keyX**: clave privada de cada nodo que lo identifica de forma única.
 
-## 4.3 Creación de ficheros con herramientas de Besu y del sistema:
+## 4.3 Creación de ficheros con herramientas de Besu y scripts:
 
 ### Generar nuevas direcciones
 
@@ -554,102 +554,207 @@ Para arrancar cada nodo en realidad solamente necesitamos ese fichero *key*, con
 
 La otra clave que se genera para cada nodo, *key.pub*, es la clave con la que se va a identificar el nodo junto con la IP en las direcciones *enode* antes mencionadas.
 
-### Claves RSA para tenants y generación de tokens JWT
+### Claves RSA y generación de tokens JWT
 
-Para la autenticación segura en la red intervienen tres elementos relacionados entre sí. Antes de verlos, conviene aclarar qué es un **tenant**: en este contexto, un tenant es simplemente la **organización, aplicación o usuario administrador** que va a operar contra la red y que necesita identificarse de forma segura.
+Para la seguridad y la autenticación de la red intervienen dos claves RSA y el propio token JWT. En la configuración que hemos desplegado, parte de las API del nodo, concreatmente las orientadas a tareas administrativas, están preparadas para ser accesibles solo mediante autenticación. Por ello, cada nodo debería disponer de sus propias claves y de los tokens JWT asociados para operar de forma segura:
 
-- **privateRSAKeyOperator**: Es la **clave privada RSA** del tenant. Se usa para **firmar** los tokens JWT. Debe mantenerse protegida y nunca compartirse.
-- **publicRSAKeyOperator**: Es la **clave pública RSA** asociada a la anterior. Se comparte con los nodos o servicios que tengan que comprobar si un token JWT es auténtico.
-- **tokens JWT (JSON Web Tokens)**: Son tokens que incluyen información de identidad y, según la configuración, también permisos o metadatos de acceso. El token se crea con unos datos concretos y después se **firma con la clave privada** para que no pueda ser falsificado fácilmente.
+- **privateRSAKeyOperator**: Es la **clave privada RSA** que se usa para **firmar** el token JWT. Debe mantenerse protegida y nunca compartirse.
+- **publicRSAKeyOperator**: Es la **clave pública RSA** asociada a la anterior. Se distribuye al nodo para que pueda verificar que el token JWT ha sido firmado con la clave privada correcta.
+- **tokens JWT (JSON Web Tokens)**: Son tokens que incluyen información de autenticación, como los permisos de acceso a APIs y la fecha de expiración. El token se crea con esos datos y después se **firma con la clave privada**. Se pueden crear tantos token JWT como se quieran con distintas características, con distintos niveles de acceso según el usuario por ejemplo.
 
 **Proceso de creación y uso del JWT:**  
-1. Se genera un par de claves RSA para el tenant: una **clave privada** y una **clave pública**.  
-2. La **clave privada** se guarda de forma segura en el sistema que va a emitir los tokens.  
-3. La **clave pública** se distribuye a los nodos o servicios que deban validar esos tokens.  
-4. Cuando el tenant necesita autenticarse, se crea un JWT con la información necesaria (por ejemplo, identidad, fechas de validez y permisos).  
-5. Ese JWT se **firma con la clave privada** del tenant.  
-6. El usuario o la aplicación envía el token al acceder a la API o al servicio protegido.  
-7. El nodo o servicio receptor verifica la firma usando la **clave pública**. Si la firma es válida y el token no ha caducado, se acepta la petición.
+1. Se genera un par de claves RSA: una **clave privada** y una **clave pública**.  
+2. La **clave privada** se guarda en el sistema que va a emitir el token JWT.  
+3. La **clave pública** se copia al nodo para que pueda validar la firma del token.
+4. Se crea el JWT con los datos necesarios, por ejemplo los permisos y la fecha de expiración.
+5. Ese JWT se **firma con la clave privada**.  
+6. El usuario o la aplicación envía el token al conectarse a la API protegida del nodo.
+7. El nodo verifica la firma con la **clave pública**. Si la firma es válida y el token no ha caducado, permite la operación.
 
-Puedes encontrar cómo generarlos y más detalles prácticos en el apartado correspondiente del repositorio o en la documentación oficial de Hyperledger Besu.
+El script `Garapena/Erremintak/JWT/sortu_JWT.py` automatiza este proceso para un nodo `X`. Al ejecutarlo pasándole ese número como argumento, crea una carpeta `X` en el directorio actual y genera dentro:
 
+- `privateRSAKeyOperatorX.pem`
+- `publicRSAKeyOperatorX.pem`
+- `JWT_X`
 
+Por defecto crea un token que da acceso a todas las API por tiempo indefinido pero se puede configurar cambiando el script si quisiéramos crear un token con permisos más limitados.
 
+> Para probarlo cambia de carpeta con `cd ~/Ikastaroa_Blockchain_Sareak/Garapena/Erremintak/JWT` y ejecuta `python ./sortu_JWT.py 5` para crear nuevas del nodo 5 claves dentro de la carpeta '5'. Te vendrá bien para el ejercicio propuesto más adelante.
 
 ## 4.4 Comunicación entre nodos
-*Pendiente desarrollar*
 
-### Protocolo P2P (peer-to-peer)
+La comunicación entre nodos en una red blockchain como Hyperledger Besu es esencial para el funcionamiento y la seguridad de la red. Aquí se destacan algunos puntos clave relevantes sobre este aspecto:
 
-- Los nodos se conectan entre sí formando una red mesh.
-- Protocolos típicos: **devp2p** (Ethereum), enlaces TCP/IP.
-- Intercambian: bloques, transacciones, mensajes de consenso.
+### Red P2P (Peer-to-Peer)
+
+Todos los nodos de la red se conectan entre sí utilizando un protocolo P2P, en el caso de Besu el protocolo devp2p (compatible con Ethereum). Esto permite el intercambio de bloques, transacciones y mensajes de consenso entre los diferentes actores, facilitando la propagación rápida de la información.
 
 ### Descubrimiento de nodos
 
-| Modo | Uso | Descripción |
-|------|-----|-------------|
-| **Discovery (DHT)** | Redes públicas | Los nodos usan una tabla hash distribuida (Kademlia) para encontrar pares al azar. |
-| **Static (static-nodes.json)** | Redes privadas | Lista fija de Enodes (URI con clave pública, IP y puerto). Al arrancar, el nodo se conecta agresivamente a esta lista. |
+En Besu hay varias formas de conseguir que un nodo encuentre a otros nodos de la red:
 
-### Bootnodes
+- **`static-nodes.json`:** Sirve para indicar de forma explícita a qué nodos queremos que se conecte. Es la opción más directa y predecible en redes privadas, porque permite fijar manualmente la lista de validadores o nodos conocidos.
 
-- Nodos iniciales conocidos que facilitan el descubrimiento.
-- En redes privadas, suelen ser los validadores o nodos dedicados.
+- **`bootnodes`:** Son nodos de entrada inicial. No representan necesariamente todos los nodos de la red, sino algunos puntos de arranque a partir de los cuales un nodo puede empezar a descubrir otros peers.
+
+> **Diferencia principal:** `static-nodes.json` define conexiones conocidas y estables desde el principio, mientras que `bootnodes` solo ayudan a arrancar el proceso de descubrimiento.
+
+> **Efecto de la opción `discovery-enabled`:** Cuando está activada (en *node-config.toml*), el nodo puede descubrir nuevos peers automáticamente a partir de otros nodos conocidos. Cuando está desactivada, el nodo no hace ese descubrimiento dinámico y depende mucho más de listas explícitas como `static-nodes.json`.
+
+- **Enode:** Es una URL que identifica de forma única un nodo de Ethereum/Besu, e incluye:
+  - La clave pública del nodo.
+  - La IP o dominio donde reside el nodo.
+  - El puerto TCP y UDP donde escucha conexiones.
+  
+  Formato de enode:
+  `enode://<clavepublica_hex>@<ip>:<tcpport>?discport=<udpport>`
+
+- **Puertos utilizados:** 
+  - Por defecto, los nodos escuchan en el puerto 30303 (TCP y UDP) para conexiones P2P.
+  - Los servicios API (RPC HTTP y WebSocket) suelen publicarse en 8545 (HTTP) y 8546 (WS), aunque pueden configurarse.
+
+- **Firewall y conectividad:** 
+  - Es importante que los puertos P2P estén abiertos entre los nodos de la red para permitir la comunicación directa.
+  - En entornos cloud o de laboratorio, se deben ajustar las reglas de firewall para no bloquear estos puertos.
+
+- **Detección y resolución de nodos:** 
+  - En redes permisionadas, la topología estática (conexión por *static-nodes.json*) es lo habitual para garantizar quién puede participar y minimizar la exposición. 
+  - En redes públicas o abiertas, se puede emplear el descubrimiento (opción `discovery-enabled`).
+
+- **Comprobaciones útiles:**
+  - Los logs de Besu indican a qué enodes está conectado un nodo.
+  - Los comandos de la consola RPC/API permiten consultar los peers conectados con métodos como `admin_peers`.
+
+En resumen, la correcta configuración de la comunicación entre nodos es imprescindible para que el consenso funcione, la información circule rápidamente y la red sea resiliente ante caídas o desconexiones parciales. 
 
 ### APIs externas
 
-Hyperledger Besu expone:
+Las APIs de Hyperledger Besu están organizadas en diferentes grupos que agrupan funcionalidades relacionadas. Cada grupo permite acceder a conjuntos de métodos específicos según el ámbito de operación. En el archivo de configuración `node-config.toml`, los grupos habituales son:
 
-- **JSON-RPC (HTTP):** Para consultas y envío de transacciones.
-- **WebSockets:** Para suscripciones en tiempo real (nuevos bloques, logs).
+- **DEBUG:** Permite obtener información detallada para diagnosticar el estado interno del nodo y registrar mensajes para depuración.
+- **ETH:** Incluye los métodos estándar de Ethereum, como la consulta de bloques, transacciones, balances y envío de transacciones.
+- **TXPOOL:** Da acceso al estado del "transaction pool", es decir, las transacciones pendientes que aún no se han incluido en la cadena.
+- **NET:** Proporciona información sobre el estado de la red, ID de la cadena, conexiones de red y estado de sincronización.
+- **TRACE:** Permite ejecutar y obtener trazas de la ejecución de transacciones, útil para análisis de contratos inteligentes.
+- **WEB3:** Proporciona utilidades básicas y de compatibilidad para la API de web3.
+- **PLUGINS:** Relacionado con la extensión por plugins de Besu, permite exponer APIs adicionales facilitadas por plugins instalados.
+- **ADMIN:** Acceso a métodos administrativos con privilegios elevados, como la gestión de peers y nodos, (solo disponible por WebSocket).
+- **MINER:** Métodos relacionados con el minado (bloques PoW, en QBFT normalmente no se usa).
+- **QBFT:** Métodos específicos para administrar y consultar el consenso QBFT, como propuestas de validadores y estado del consenso.
+- **PERM:** Relacionado con la gestión de permisos de nodos y cuentas.
 
-*Pendiente desarrollar*
+De esta forma se pueden habilitar o restringir grupos de APIs según las necesidades del despliegue, aumentando tanto la flexibilidad como la seguridad.
+
+La referencia completa de los métodos disponibles se encuentra en la [página oficial](https://besu.hyperledger.org/public-networks/reference/api).
+
+**Cómo invocar los métodos de la API**
+
+En nuestro despliegue tenemos algunos grupos de API accesibles mediante HTTP en el puerto 8545 sin necesidad de autorización y por otra parte todos los grupos de API accesibles mediante Websocket en el puerto 8546 con autorización (token JWT). Todo esto viene configurado en el fichero [node-config.toml](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak/blob/main/Hedapena/configNodes/node-config.toml) de cada nodo.
+
+Veamos un ejemplo de cada uno:
+
+  - HTTP puerto 8545 sin autorización: ejecuta por ejemplo:
+
+  `curl -X POST --data '{"jsonrpc":"2.0","method":"net_peerCount","params":[],"id":53}' http://192.168.100.1:8545/ -H "Content-Type: application/json"`
+
+  Invoca el método *net_peerCount* del [grupo NET](https://besu.hyperledger.org/public-networks/reference/api#net-methods) en el nodo con IP 192.168.100.1 y puerto 8545, que está accesible sin autenticación. La resuesta que veremos es:
+
+  `{"jsonrpc":"2.0","id":53,"result":"0x3"}`
+
+  Un 3, es decir, que el nodo tiene 3 peers.
+
+  - Websocket puerto 8546 con autorización: es algo más complejo, tenemos que utilizar un programa (*websocat*, ya instalado) para iniciar la comunicación añadiéndole el token JWT_1 en la solicitud y luego invocar métodos. Sigue estos pasos para probarlo:
+
+    `cd ~`
+
+    `./websocat -H="Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJwZXJtaXNzaW9ucyI6WyIqOioiXSwicHJpdmFjeVB1YmxpY0tleSI6IjdxSHJ0RG85TVc0UHRPSXgrTkJDWWNqTTNqN0UzaU0rYUExL20rNmpzbnM9IiwiZXhwIjoxNjAwODk5OTk5MDAyfQ.drZxJPRxE3AQ5z5ws8gJ2E_q0zUqZM82QdXp1DREuXcdyskL0eqTCs0OVwvarlWpxFXJzXShEYzinNeLZrfPZHGReDYoQMoSuTNaI34REsVQ8zUqvUt2J9UNklKnGzOXZlZ6Z0nTVD69DviIb-GrLwJ4eiqLi9-AeqSI90DlQmubIuhLJZHPH0Y7NOWvLOJ-jcUddFGmzl9wonAnsmwBM3YDbpA3bWFtp5Cb8ZQox073-7kWmNjImnUljr8Uut_j1xdc5fIJxIBez7Q1v4rkia0SXSd6fC5OL7A9OgEiYmt7Xus8at__3luhVJfNIU8DaHFnXWtfosZgLtAa4Vykbw" ws://192.168.100.2:8546`
+
+    Con eso iniciamos una conexión websocket al nodo 2, que se queda a la espera de comandos. Fíjate en que el formato es: `./websocat -H="Authorization: TOKEN_JWT" ws://192.168.100.2:8546`. Se ha utilizado el token JWT_2 en este caso (aunque son todos iguales en la red desplegada, por simplicidad)
+
+    Cuando se quede a la espera de nuevo comandos, escribimos por ejemplo:
+
+    `{"jsonrpc":"2.0","method":"qbft_getValidatorsByBlockNumber","params":["latest"], "id":1}`
+
+    Esto invoca el método *qbft_getValidatorsByBlockNumber* del [grupo QBFT](https://besu.hyperledger.org/private-networks/reference/api#qbft-methods). Obtendremos una respuesta como esta:
+
+    `{"jsonrpc":"2.0","id":1,"result":["0x867e3dcc2e546ab8d62ab8b25e6800c328ca2dd8","0x89b84b7fa93e429f2ce4632505074eed74e89351","0x92c83b4052230b836e100c42701cdc83d7baeb8a","0xc6261c951d52b563d6a91afb774db1c2516caac4"]}`
+
+    Que son las direcciones (address) de los cuatro nodos que forman nuestra red. Esta respuesta significa que nos cuatro nodos han actuado como validadores del último bloque producido (en la llamada se indica "last").
+
+De esta forma ya puedes invocar cualquier método de la API para obtener información o ejecutar operaciones administrativas.
+
+> Comprueba que funcionan los ejemplos dados, el ejercicio final tendrás que hacer uso de estos métodos.
 
 ## 4.5 Seguridad en redes Blockchain
 
-### Criptografía
-
-- **ECDSA:** Firmas digitales para transacciones y bloques.
-- **Keccak-256:** Función hash utilizada (compatible con Ethereum).
-- Las claves privadas nunca deben exponerse; las direcciones derivan de la clave pública.
+Repasemos las principales características y medidas de seguridad que se pueden implementar en la red blockchain.
 
 ### Autenticación y autorización
 
-En redes privadas:
-
-- Control de acceso a nodos (whitelist de Enodes): restringir qué nodos pueden conectarse a cada nodo.
-- Control de cuentas permitidas: restringir que cuentas pueden operar en la red a la hora de hacer transacciones.
-- Gestión de validadores QBFT (propuestas y votaciones on-chain).
+- Control de acceso a nodos (mediante *nodes_permissions_config.toml*): restringir qué nodos pueden conectarse a cada nodo.
+- Control de cuentas permitidas (mediante *accounts_permissions_config.toml*): restringir qué cuentas pueden operar en la red a la hora de hacer transacciones.
+- Gestión de nodos validadores (propuestas y votaciones on-chain): decidir qué nodos van a ser validadores y añadir o quitarlos votando por mayoría.
 - Acceso a APIs de administración de la red mediante JWT (JSON Web Tokens).
-  - Creación de tokens.
-  - Herramienta para operar con la API (websocat)
-*Pendiente desarrollar*
+- Aplicar el principio de mínimo privilegio: no todos los usuarios o servicios deberían tener todos los permisos (`["*:*"]`) si no lo necesitan.
+- Configurar una expiración razonable de los JWT y regenerarlos cuando sea necesario, en lugar de reutilizarlos indefinidamente.
+- Limitar el acceso a las APIs administrativas a los canales estrictamente necesarios, evitando exponer más superficie de ataque de la imprescindible.
 
-## 4.4 Monitorización y mantenimiento
+### Configuración segura del nodo
+
+- Revisar qué APIs JSON-RPC se exponen por HTTP y por WebSocket, habilitando solo las necesarias.
+- Evitar publicar interfaces administrativas en `0.0.0.0` si no es imprescindible o, si se hace, protegerlas con firewall, VPN o túneles SSH.
+- Separar en lo posible los servicios P2P, RPC y métricas para controlar mejor qué clientes pueden acceder a cada puerto.
+- Revisar periódicamente `static-nodes.json`, `bootnodes` y las listas de permisos para retirar nodos o accesos que ya no deban existir.
+
+
+### Conectividad
+
+- Uso de firewalls y restricción de puertos accesibles.
+- Apertura únicamente de los puertos estrictamente necesarios para P2P, RPC y monitorización.
+- Segmentación de red o uso de redes privadas/VPN para que los nodos no queden expuestos innecesariamente a Internet.
+- Restricción por IP o por rango de red cuando se conozcan de antemano los equipos que deben conectarse.
+
+### Monitorización y respuesta ante incidentes
+
+- Supervisar logs, número de peers, sincronización y uso de recursos para detectar comportamientos anómalos.
+- Revisar intentos de acceso fallidos a las APIs, desconexiones inesperadas y cambios no previstos en el conjunto de validadores.
+- Definir procedimientos de respuesta: revocar JWT, rotar claves, cerrar puertos o aislar nodos comprometidos.
+
+### Mantenimiento y operación segura
+
+- Las claves privadas nunca deben exponerse; las direcciones derivan de la clave pública.
+- Las claves privadas de cuentas, nodos y JWT deben almacenarse con permisos de acceso mínimos y nunca en repositorios públicos.
+- Conviene rotar las claves de acceso administrativo si existe sospecha de compromiso o cuando cambian las personas responsables.
+- Mantener Besu, el sistema operativo y las herramientas auxiliares actualizados para corregir vulnerabilidades conocidas.
+- Hacer copias de seguridad de los ficheros críticos de configuración y de las claves que sea necesario conservar, protegiéndolas adecuadamente.
+- Documentar quién tiene acceso administrativo a cada nodo y reducir al mínimo el número de credenciales con privilegios elevados.
+
+
+## 4.6 Monitorización y mantenimiento
 
 ### Indicadores clave
 
-- Estado de sincronización (`eth_syncing`).
-- Número de peers conectados.
-- Tiempo desde el último bloque (latencia de la red).
-- Uso de recursos (CPU, disco, memoria).
+- Estado de sincronización de cada nodo (`eth_syncing`).
+- Número de peers conectados en cada nodo (`net_peerCount`).
+- Tiempo desde el último bloque (`eth_getBlockByNumber(["latest", false])`) observando el campo `timestamp` y comparándolo con la hora actual.
+- Uso de recursos del sistema (CPU, disco, memoria).
+- Estado del consenso y producción de bloques, para detectar si la red sigue avanzando con normalidad.
+- Errores repetidos en los logs, desconexiones frecuentes o caídas del número de peers.
 
 ### Herramientas
 
 - Logs de Besu.
 - Ethstats.
 - Prometheus + Grafana para métricas.
-- Alertas: peers < umbral, bloqueo de producción de bloques, uso alto de CPU.
+- Alertas: Conviene definir alertas para situaciones como “número de peers por debajo de un umbral”, “bloqueo en la producción de bloques”, “falta de sincronización” o “uso elevado de CPU, memoria o disco”.
 
-### Mantenimiento típico
+### Buenas prácticas
 
-- Actualización de versión de Besu.
-- Reinicio controlado de nodos.
-- Backup de datos (con nodo detenido o snapshots de volumen).
-- Añadir/eliminar validadores siguiendo el proceso de votación QBFT.
+- Revisar periódicamente los logs tras reinicios, cambios de configuración o despliegues.
+- Vigilar el espacio en disco y el crecimiento de datos y logs para evitar paradas inesperadas.
+- Verificar después de cada cambio que el nodo sigue sincronizado, mantiene peers y responde correctamente por RPC.
 
-**Ejercicio: añadir un quinto nodo a la red y convertirlo en validador con votos en los demás nodos.**
+**Ejercicio: añadir un quinto nodo a la red y convertirlo en validador con votos en los demás nodos. Dos partes: añadir un quinto nodo y convertirlo en validador.**
 
 ---
 
