@@ -10,8 +10,6 @@ Dokumentu honek Blockchain zer den eta Blockchain sareek nola funtzionatzen dute
 
 ## 1.1 Zer da Blockchain?
 
-### Definizio formala
-
 **Blockchain** datu-base banatu, aldaezin eta deszentralizatu bat da, kriptografikoki lotutako blokeetan multzokatutako transakzioen erregistro ordenatua mantentzen duena.
 
 ### Analogia didaktikoa: partekatutako kontabilitate-liburua
@@ -29,7 +27,7 @@ Imajinatu kontabilitate-liburu bat honela:
 | **Deszentralizazioa** | Ez dago datuak kontrolatzen dituen agintaritza zentral bakar bat. Sarea nodo independente ugarik mantentzen dute. | Akats-puntu bakarra ezabatzen du; ez dago transakzioak blokeatu edo aktiboak konfiskatu ditzakeen "banku" bakar bat. |
 | **Aldaezintasuna** | Datuak ezin dira aldatu adostasunik gabe. Zailtasun konputazionalak (PoW) edo balidatzaileen sinadura digitalek (PoA) historia berridaztea bideraezin bihurtzen dute. | Auditoretza fidagarria: erregistratzen dena hor geratzen da. Ideala trazabilitaterako eta araudia betetzeko. |
 | **Gardentasuna** | Nodoek uneko egoera eta transakzioen historia egiaztatu ditzakete. Sare publikoetan, edonork audita dezake; pribatuetan, baimendutako parte-hartzaileek. | Hirugarren batean konfiantzarik jarri gabe egiaztapena ahalbidetzen du. |
-| **Akatsen aurreko tolerantzia** | Sareak funtzionatzen jarraitzen du nodo batzuek huts egiten badute edo gaiztoak badira ere (adostasun-protokoloak ezarritako atalase bateraino). | Erresilientzia: sareak lanean jarraitzen du erorketa partzialen aurrean. |
+| **Akatsen aurreko tolerantzia** | Sareak funtzionatzen jarraitzen du nodo batzuek huts egiten badute edo gaiztoak badira ere (adostasun-protokoloak ezarritako muga bateraino). | Erresilientzia: sareak lanean jarraitzen du erorketa partzialen aurrean. |
 
 ### Blockchain vs datu-base tradizionala
 
@@ -37,8 +35,8 @@ Imajinatu kontabilitate-liburu bat honela:
 |---------|---------------------------|------------|
 | **Kontrola** | Administratzaile batek erabakitzen du zer gordetzen den | Nodoen arteko adostasun banatua |
 | **Aldaketa** | Erregistroak eguneratu edo ezabatu daitezke | Bloke berriak bakarrik gehitzen dira; historia aldaezina da |
-| **Konfiantza** | Administratzailearengan konfiantza jartzen da | Kriptografian eta protokoloan konfiantza jartzen da |
-| **Errendimendua** | Oso handia (milaka TPS) | Adostasunak mugatua (normalean ehunka TPS sare pribatuetan) |
+| **Konfiantza** | Administratzailearengan konfiantza jartzen da | Kriptografian eta protokoloan jartzen da konfiantza |
+| **Errendimendua** | Oso handia, milaka transakzio segunduko (TPS) | Adostasunak mugatua (normalean ehunka TPS sare pribatuetan) |
 
 ---
 
@@ -170,7 +168,7 @@ Bloke bakoitzak bi zati nagusi ditu:
 
 **Laburpena:** EVM-k ez du iturburu-koderik (.sol) ezta ABIrik ere exekutatzen. **Bytecode** bakarrik exekutatzen du (EVMren makina-kodea). Exekuzioa **kontratu bati eragiten dion transakzio bat bloke batean sartzen denean** gertatzen da; sareko nodo bakoitzak transakzioak lokalki exekutatzen ditu emaitza blokearen proposatzailearenarekin bat datorrela egiaztatzeko.
 
-### Solidity eta hari lotutako fitxategiak
+### Solidity eta honi lotutako fitxategiak
 
 Smart Contract-ak normalean **Solidity**-n idazten dira, C/JavaScript-en inspiratutako goi-mailako lengoaia batean. Garapenean hainbat artefakturekin lan egiten da:
 
@@ -182,7 +180,7 @@ Smart Contract-ak normalean **Solidity**-n idazten dira, C/JavaScript-en inspira
 
 **Ohiko fluxua:** Garatzaileak `MiContrato.sol` idazten du → konpilatzaileak bytecode-a (`MiContrato.bytecode`) eta ABIa (`MiContrato.abi`) sortzen ditu → bytecode-a sarean hedatzen da → aplikazioek ABI erabiltzen dute kontratuaren funtzioei deitzen dieten transakzioak eraiki eta bidaltzeko.
 
-**Garrantzitsua - EVMren bertsioa:** EVM hard fork bakoitzarekin eboluzionatzen da (London, Shanghai, Cancun, etab.). Sare bakoitzak bere `genesis.json`-ean definitzen du zein EVM bertsio aktibatzen duen (adibidez, EIPen aktibazio-blokeen bidez). **Funtsezkoa da kontratua hedatuko den sareari dagokion EVM bertsioarekin konpilatzea**. Sarea baino berriagoa den EVM baterako konpilatzen badugu, bytecode-ak existitzen ez diren opcodes-ak erabil ditzake eta transakzioak huts egingo du. Zaharrago baterako konpilatzen badugu, optimizazioak edo funtzionalitateak galduko ditugu. Solidity-n `pragma solidity ^0.8.0` bidez zehazten da, eta konpilatzailean `--evm-version` aukerarekin (adib. `paris`, `shanghai`).
+**Garrantzitsua - EVMren bertsioa:** EVM hard fork bakoitzarekin eboluzionatzen da (London, Shanghai, Cancun, etab.). Sare bakoitzak bere `genesis.json`-ean definitzen du zein EVM bertsio aktibatzen duen. **Funtsezkoa da kontratua hedatuko den sareari dagokion EVM bertsioarekin konpilatzea**. Sarea baino berriagoa den EVM baterako konpilatzen badugu, bytecode-ak existitzen ez diren opcodes-ak erabil ditzake eta transakzioak huts egingo du. Zaharrago baterako konpilatzen badugu, optimizazioak edo funtzionalitateak galduko ditugu. Solidity-n `pragma solidity ^0.8.0` bidez zehazten da, eta konpilatzailean `--evm-version` aukerarekin (adib. `paris`, `shanghai`).
 
 ### Pila-arkitektura (Stack-based)
 
@@ -356,7 +354,7 @@ Iturburu-kode guztia hemen dago: https://github.com/aiza-fp/Ikastaroa_Blockchain
 
 Makina hauek erabiltzaile bakoitzarentzat hedatuta daude hemen: https://vdi.tknika.eus/login
 
-'Besu nodo 1-5' izeneko lau makina birtualak Ubuntu Server makinak dira; konfiguratutako gauza bakarrak IP helbide finkoa eta zerbitzariaren izena dira. Blockchain sareko nodoak martxan jartzeko instalatu behar dugun guztia **Ansible** bidez egingo da hedapenean.
+'Besu nodo 1-5' izeneko bost makina birtualak Ubuntu Server makinak dira (**4 bakarrik erabiliko dira hedapen honetan**). Konfiguratutako gauza bakarrak IP helbide finkoa eta zerbitzariaren izena dira. Blockchain sareko nodoak martxan jartzeko instalatu behar dugun guztia **Ansible** bidez egingo da hedapenean.
 
 'Ubuntu Desktop' izeneko makina birtuala mahaigaineko Ubuntu bat da; konfiguratutako gauza bakarrak IP helbide finkoa eta hedapena egiteko Ansible instalatua dira. Hedapenaren zati bat makina horretan bertan egiten da, blockchain-a erabiltzen duten aplikazioentzako web zerbitzari gisa jokatzen baitu.
 
@@ -374,7 +372,7 @@ Hedapenerako 'Ubuntu Desktop' izeneko makina erabiliko dugu, urrats hauek jarrai
 
 3.- Lehenik, makinekiko konektibitatea egiaztatuko dugu. Horretarako, lehen komandoarekin haien gakoak makina ezagunen zerrendara gehitzen ditugu, eta bigarrenarekin Ansiblek haietara sarbidea duela egiaztatzen dugu (makina bakoitzeko SUCCESS bat jaso behar dugu):
 
-`ssh-keyscan -t ed25519 -H 192.168.100.1 192.168.100.2 192.168.100.3 192.168.100.4 >> ~/.ssh/known_hosts`
+`ssh-keyscan -t ed25519 -H 192.168.100.1 192.168.100.2 192.168.100.3 192.168.100.4 192.168.100.5 >> ~/.ssh/known_hosts`
 
 `ansible -i Hedapena/inventory.yml -m ping all --ask-pass`
 
@@ -396,67 +394,73 @@ Hau da Ansible bidezko hedapen-prozesuan gertatu dena:
 
 1. Hasteko, hedapenerako eta instalaziorako behar den kode guztia [Github](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak)-etik deskargatu dugu `git clone ...` komandoarekin.
 
+
 2. Hedapenean parte hartzen duten makinak biltegiko [`Hedapena/inventory.yml`](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak/blob/main/Hedapena/inventory.yml) fitxategian definituta daude. Bertan definitzen da haien IPa, eta taldeka sailkatuta daude (`besu_nodes`, `webserver`), edukiak hedatzerakoan bereizteko.
+
 
 3. Ansibleri *ssh* bidezko sarbidea behar zaionez, `ssh-keyscan` komandoaren bidez urruneko makinak makina ezagunen zerrendara gehitu ditugu, eta `ansible -i Hedapena/inventory.yml -m ping all --ask-pass` komandoarekin hedapenean parte hartzen duten makinetara sarbidea duela egiaztatu dugu.
 
+
 4. [`Hedapena/hedapena-AnsiblePlaybook.yml`](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak/blob/main/Hedapena/hedapena-AnsiblePlaybook.yml) fitxategian definitutako Ansible **playbook**-a exekutatzen dugu. Playbook-ak hiru zeregin gauzatzen ditu:
 
-   4.1. Docker eta Docker Compose makina guztietan instalatzea: `hosts: all_servers` propietateak inbentarioan definitutako makina guztiei eragiten diela adierazten du. `isard` erabiltzailearen pasahitza eskatzen da, eta 4 azpi-zeregin exekutatzen dira:
 
+   4.1. Docker eta Docker Compose makina guztietan instalatzea: 'hosts: all_servers' propietateak inbentarioan definitutako makina guztiei eragiten diela adierazten du. 'isard' erabiltzailearen pasahitza eskatzen da, eta 4 azpi-zeregin exekutatzen dira:
     - Pasahitza aldagai batean gordetzea, berriro eskatu behar ez izateko.
-    - `docker.io` eta `docker-compose-v2` paketeak instalatzea.
+    - 'docker.io' eta 'docker-compose-v2' paketeak instalatzea.
     - Docker zerbitzua abiaraztea.
-    - `isard` erabiltzailea `docker` taldera gehitzea.
+    - 'isard' erabiltzailea 'docker' taldera gehitzea.
 
-   4.2. Web zerbitzaria hedatzea eta zerbitzuak abiaraztea: `hosts: webserver` propietateak lotutako zereginak webserver taldeko makinetan bakarrik egingo direla adierazten du; kasu honetan, 192.168.100.10 IP duen makina da, eta hedapena egiteko erabiltzen ari garen bera da. Azpi-zereginak hauek dira:
-    - `besu` karpeta sortzea.
-    - `WebServer` karpeta helmugako `besu` karpetaren barrura kopiatzea.
-    - `Pilotoak` karpeta helmugako `besu` karpetaren barrura kopiatzea.
-    - Helmugako `besu` karpeta eta azpikarpetak `isard` erabiltzailearenak direla ziurtatzea.
-    - Docker bidez web zerbitzaria eta `WebServer/docker-compose.yml` fitxategian definitutako beste zerbitzu batzuk abiaraztea.
 
-   4.3. Hyperledger Besu lau nodoetan hedatzea: `hosts: besu_nodes` propietateak lotutako zereginak `besu_nodes` taldeko makinetan bakarrik egingo direla adierazten du. Azpi-zereginak hauek dira:
-    - `~/besuNode`-n beharrezko karpeta-egitura sortzea.
-    - Nodo guztientzat komunak diren `Hedapena` fitxategiak kopiatzea.
+   4.2. Web zerbitzaria hedatzea eta zerbitzuak abiaraztea: 'hosts: webserver' propietateak lotutako zereginak webserver taldeko makinetan bakarrik egingo direla adierazten du; kasu honetan, 192.168.100.10 IP duen makina da, eta hedapena egiteko erabiltzen ari garen bera da. Azpi-zereginak hauek dira:
+    - 'web' karpeta sortzea.
+    - 'WebServer' karpeta helmugako 'web' karpetaren barrura kopiatzea.
+    - 'Pilotoak' karpeta helmugako 'web' karpetaren barrura kopiatzea.
+    - Helmugako 'web' karpeta eta azpikarpetak 'isard' erabiltzailearenak direla ziurtatzea.
+    - Docker bidez web zerbitzaria eta 'WebServer/docker-compose.yml' fitxategian definitutako beste zerbitzu batzuk abiaraztea.
+
+
+   4.3. Hyperledger Besu lau nodoetan hedatzea: 'hosts: besu_nodes' propietateak lotutako zereginak *besu_nodes* taldeko makinetan bakarrik egingo direla adierazten du. Azpi-zereginak hauek dira:
+    - '~/besuNode'-n beharrezko karpeta-egitura sortzea.
+    - Nodo guztientzat komunak diren fitxategiak kopiatzea.
     - Nodo bakoitzaren fitxategi espezifikoak kopiatzea (indizea erabiliz).
-    - Helmugako `besuNode` karpeta eta azpikarpetak `isard` erabiltzailearenak direla ziurtatzea.
-    - Docker bidez Besu makina bakoitzean abiaraztea. Kasu honetan, makina bakoitzerako fitxategi ezberdin bat hedatu behar denez, fitxategi-izeneko zenbakiari `inventory.yml`-n definitutako indize-zenbakia erreferentziatzen zaio.
+    - Helmugako 'besuNode' karpeta eta azpikarpetak 'isard' erabiltzailearenak direla ziurtatzea.
+    - Docker bidez Besu makina bakoitzean abiaraztea. Kasu honetan, makina bakoitzerako fitxategi ezberdin bat hedatu behar denez, fitxategi-izeneko zenbakiari *inventory.yml*-n definitutako indize-zenbakia erreferentziatzen zaio.
 
-Ariketa gisa honako hauek proposatzen dira:
+**Ariketa, ondorengoa egitean datza:**
 
-1. Jarraitu deskribatutako urrats guztiak aurrez konfiguratutako blockchain sarea hedatzeko. Entregatu Ethstats-en kaptura bat, nodo guztiak martxan eta blokeak sortzen agertzen direna.
+**1.** Jarraitu deskribatutako urrats guztiak aurrez konfiguratutako blockchain sarea hedatzeko. Entregatu Ethstats-en kaptura bat, nodo guztiak martxan eta blokeak sortzen agertzen direna.
 
-2. Sartu nodoetako batera (erosotasun handiagoz Ubuntu Desktop-etik ssh bidez) eta jaitsi zerbitzua eskuz, sareak blokeak sortzen jarraitzen duela ikusteko.
-    * Exekutatu `ssh isard@192.168.100.1` eta `besuNode` karpetaren barruan `docker compose -f docker-compose1.yml down`
-    * Atera zerbitzariko konexiotik `exit` erabiliz.
-    * Begiratu Ethstats nabigatzailean.
-    * Entregatu Ethstats-en kaptura bat 3 nodo martxan baina blokeak sortzen ari direla erakutsiz (`Last block` 10 segundo baino gutxiagorekin).
 
-3. Sartu beste nodo batera eta jaitsi zerbitzua, sarea dagoeneko ez dela bloke gehiago sortzen ikusteko.
-    * Exekutatu `ssh isard@192.168.100.2` eta `besuNode` karpetaren barruan `docker compose -f docker-compose2.yml down`
-    * Atera zerbitzariko konexiotik `exit` erabiliz.
-    * Begiratu Ethstats nabigatzailean.
-    * Entregatu Ethstats-en kaptura bat 2 nodo martxan eta bloke berririk sortu gabe (`Last block` 10 segundo baino gehiagorekin).
+**2.** Sartu nodoetako batera (erosotasun handiagoz Ubuntu Desktop-etik ssh bidez) eta jaitsi zerbitzua eskuz, sareak blokeak sortzen jarraitzen duela ikusteko.
+  - Exekutatu `ssh isard@192.168.100.1` eta `besuNode` karpetaren barruan `docker compose -f docker-compose1.yml down`
+  - Atera zerbitzariko konexiotik `exit` erabiliz.
+  - Begiratu Ethstats nabigatzailean.
+  - Entregatu Ethstats-en kaptura bat 3 nodo martxan baina blokeak sortzen ari direla erakutsiz (`Last block` 10 segundo baino gutxiagorekin).
 
-4. Berraktibatu zerbitzua bi nodoetan, sareak bloke-sorkuntzari berrekin diola ikusteko (ingurune honetan bloke berriak sortzeari berriro ekiteko denbora pixka bat behar izan dezake, 5 minutu inguru).
-    * Exekutatu `ssh isard@192.168.100.1` eta `besuNode` karpetaren barruan `docker compose -f docker-compose1.yml up -d`
-    * Atera zerbitzariko konexiotik `exit` erabiliz.
-    * Exekutatu `ssh isard@192.168.100.2` eta `besuNode` karpetaren barruan `docker compose -f docker-compose2.yml up -d`
-    * Atera zerbitzariko konexiotik `exit` erabiliz.
-    * Begiratu Ethstats nabigatzailean.
-    * Entregatu Ethstats-en kaptura bat nodo guztiak martxan eta blokeak sortzen agertzen direna (bloke-zenbakiak aurreko ataleko kapturakoa baino handiagoa izan behar du, eta `Last block`-ek 10 segundo baino gutxiago erakutsi behar ditu).
+**3.** Sartu beste nodo batera eta jaitsi zerbitzua, sarea dagoeneko ez dela bloke gehiago sortzen ikusteko.
+  - Exekutatu `ssh isard@192.168.100.2` eta `besuNode` karpetaren barruan `docker compose -f docker-compose2.yml down`
+  - Atera zerbitzariko konexiotik `exit` erabiliz.
+  - Begiratu Ethstats nabigatzailean.
+  - Entregatu Ethstats-en kaptura bat 2 nodo martxan eta bloke berririk sortu gabe ('Last block' 10 segundo baino gehiagorekin).
 
-5. Hedatu Smart Contract bat. Gure sarea dagoeneko operatiboa dela eta transakzioak egin daitezkeela egiaztatzeko, dagoeneko konpilatuta dagoen kontratu bat hedatu eta deitzen duen script bat exekutatuko dugu:
-    * Joan kontratuen karpetara `cd ~/Ikastaroa_Blockchain_Sareak/Garapena/Kontratuak/Formularioak` komandoarekin. Bertan `Formularioak` izeneko kontratu baten *.sol*, *.abi* eta *.bytecode* fitxategiak daude.
-    * Exekutatu `python ./hedatu_erabili.py`.
-    * Identifikatu mezuetan kontratua hedatu den helbidea eta kopiatu terminaletik (`Ctrl. + Maius. + C`).
-    * Ireki nabigatzailearekin karpeta berean dagoen `trazabilitatea.html` fitxategia eta sartu kontratuaren helbidea. Formulario-zenbakia 1 da.
-    * Entregatu web-orriaren kaptura bat, non kontratu horretarako formularioko datuak berreskuratu direla ikusten den.
+**4.** Berraktibatu zerbitzua bi nodoetan, sareak bloke-sorkuntzari berrekin diola ikusteko (ingurune honetan bloke berriak sortzeari berriro ekiteko denbora pixka bat behar izan dezake, 5 minutu inguru).
+  - Exekutatu `ssh isard@192.168.100.1` eta `besuNode` karpetaren barruan `docker compose -f docker-compose1.yml up -d`
+  - Atera zerbitzariko konexiotik `exit` erabiliz.
+  - Exekutatu `ssh isard@192.168.100.2` eta `besuNode` karpetaren barruan `docker compose -f docker-compose2.yml up -d`
+  - Atera zerbitzariko konexiotik `exit` erabiliz.
+  - Begiratu Ethstats nabigatzailean.
+  - Entregatu Ethstats-en kaptura bat nodo guztiak martxan eta blokeak sortzen agertzen direna (bloke-zenbakiak aurreko ataleko kapturakoa baino handiagoa izan behar du, eta 'Last block'-ek 10 segundo baino gutxiago erakutsi behar ditu).
 
-6.- Erabili bloke-esploratzaile bat eta identifikatu transakzio baten datuak non dauden. Aurreko ariketako azken transakzioak 1. formularioa eguneratzen du `'Dato final 1'` eta `'Dato final 2'` informazioarekin. Ikus daiteke transakzio hori zein bloke-zenbakitan gertatu den.
-    * Sartu nabigatzailean `esploratzaile.localhost` helbidera eta bilatu transakzio hori gertatu den bloke-zenbakia.
-    * Entregatu bloke horren datuekin kaptura bat. `'Dato final 1'` eta `'Dato final 2'` agertu behar dira.
+**5.** Hedatu Smart Contract bat. Gure sarea dagoeneko operatiboa dela eta transakzioak egin daitezkeela egiaztatzeko, dagoeneko konpilatuta dagoen kontratu bat hedatu eta deitzen duen script bat exekutatuko dugu:
+  - Joan kontratuen karpetara `cd ~/Ikastaroa_Blockchain_Sareak/Garapena/Kontratuak/Formularioak` komandoarekin. Bertan `Formularioak` izeneko kontratu baten *.sol*, *.abi* eta *.bytecode* fitxategiak daude.
+  - Exekutatu `python ./hedatu_erabili.py`.
+  - Identifikatu mezuetan kontratua hedatu den helbidea eta kopiatu terminaletik (`Ctrl. + Maius. + C`).
+  - Ireki nabigatzailearekin karpeta berean dagoen `trazabilitatea.html` fitxategia eta sartu kontratuaren helbidea. Formulario-zenbakia 1 da.
+  - Entregatu web-orriaren kaptura bat, non kontratu horretarako formularioko datuak berreskuratu direla ikusten den.
+
+**6.**- Erabili bloke-esploratzaile bat eta identifikatu transakzio baten datuak non dauden. Aurreko ariketako azken transakzioak 1. formularioa eguneratzen du 'Dato final 1' eta 'Dato final 2' informazioarekin. Ikus daiteke transakzio hori zein bloke-zenbakitan gertatu den.
+  - Sartu nabigatzailean `esploratzaile.localhost` helbidera eta bilatu transakzio hori gertatu den bloke-zenbakia.
+  - Entregatu bloke horren datuekin kaptura bat. 'Dato final 1' eta 'Dato final 2' agertu behar dira.
 
 Hurrengo atalean aztertuko dugu non konfiguratu diren hedatutako blockchain sarearen alderdi desberdinak.
 
@@ -466,23 +470,24 @@ Hurrengo atalean aztertuko dugu non konfiguratu diren hedatutako blockchain sare
 
 ## 4.1 Makinetan behar den softwarea
 
-Lan egiten ari garen Ubuntu Desktop makinak jada honako hau dakar instalatuta:
+Erabiltzen ari garen Ubuntu Desktop makinak jada honako hau dakar instalatuta:
 
-- Ansible
-- Java 25
+- Ansible (hedapena egiteko)
+- Java 25 (Besu erremintak erabiltzeko)
 - Hyperledger Besu 26.2.0 (softwarea eta tresnak, ez nodo bat)
+- Python (smart-contract baten hedapena egiteko eta klabe batzuk sortzeko)
 
-Ubuntu Server makinek (`Besu node 1-5`) ez dute ezer instalatuta.
+Ubuntu Server makinek ('Besu node 1-5') ez dute ezer instalatuta.
 
 ## 4.2 Besu nodoetako konfigurazio-fitxategien egitura eta edukia
 
 Gure kasuan, Hyperledger Besu sare bat hedatzen ari gara lau nodotan.
 
-Nodo bakoitzerako, fitxategiak hedapen-karpetan (`besu`) honela egituratzen dira:
+Nodo bakoitzerako, fitxategiak hedapen-karpetan (besu) honela egituratzen dira:
 
 ![Tree](../baliabideak/tree.jpg)
 
-Aurreko atalean ikusi den bezala, nodo bakoitzean hedapena `docker-composeX.yml` fitxategi bakoitzean definitutako Docker zerbitzu bat abiaraztean datza.
+Aurreko atalean ikusi den bezala, nodo bakoitzean hedapena **docker-composeX.yml** fitxategi bakoitzean definitutako Docker zerbitzu bat abiaraztean datza.
 
 [docker-composeX.yml](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak/blob/main/Hedapena/docker-compose1.yml) fitxategian nodoan hedatuko den Docker irudia definitzen da (iruzkinetan konfigurazio-lerro bakoitzak zer egiten duen deskribatzen da) eta haren ezaugarriak. **Begiratu emandako estekari konfiguratutakoa ulertzeko**.
 
@@ -493,7 +498,7 @@ Fitxategi horretatik abiatuta, ikus dezagun zein harreman duen konfigurazioko ga
   - **publicRSAKeyOperator.pem**: JWT sarbide-tokenak egiaztatzeko erabiltzen den gako publikoa.
   - **[static-nodes.json](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak/blob/main/Hedapena/networkFiles/static-nodes.json)**: abiaraztean konektatu behar diren nodo ezagunen zerrenda duen fitxategia. Zerrenda *enode* helbideek osatzen dute (**gako publikoa + IP:portua**).
   - **[nodes_permissions_config.toml](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak/blob/main/Hedapena/networkFiles/nodes_permissions_config.toml)**: *node-config.toml*-en nodoen araberako baimenak aktibatu baditugu, fitxategi honek nodo honekin komunikatzeko baimena duten nodoen helbideak adierazten ditu. Zerrenda *enode* helbideek osatzen dute (**gako publikoa + IP:portua**)
-  - **[accounts_permissions_config.toml](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak/blob/main/Hedapena/networkFiles/accounts_permissions_config.toml)**: *node-config.toml*-en helbideen araberako baimenak aktibatu baditugu, fitxategi honek nodora transakzioak bidaltzeko baimena duten helbideak adierazten ditu (gure kasuan lehenetsita desaktibatuta dago).
+  - **[accounts_permissions_config.toml](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak/blob/main/Hedapena/networkFiles/accounts_permissions_config.toml)**: *node-config.toml*-en helbideen araberako baimenak aktibatu baditugu, fitxategi honek nodora transakzioak bidaltzeko baimena duten helbideak adierazten ditu (gure kasuan desaktibatuta dago).
 
 - **networkFiles/keys/keyX**: nodo bakoitza modu bakarrean identifikatzen duen gako pribatua.
 
@@ -599,7 +604,8 @@ Besun hainbat modu daude nodo batek sareko beste nodo batzuk aurki ditzan:
 
 > **`discovery-enabled` aukeraren eragina:** Aktibatuta dagoenean (*node-config.toml*-en), nodoak beste nodo ezagun batzuetatik abiatuta *peer* berriak automatikoki aurki ditzake. Desaktibatuta dagoenean, nodoak ez du aurkikuntza dinamiko hori egiten eta askoz gehiago oinarritzen da `static-nodes.json` bezalako zerrenda esplizituetan.
 
-- **Enode:** Ethereum/Besu nodo bat modu bakarrean identifikatzen duen URL bat da, eta honako hauek barne hartzen ditu:
+- Enode: 
+  Ethereum/Besu nodo bat modu bakarrean identifikatzen duen URL bat da, eta honako hauek barne hartzen ditu:
   - Nodoaren gako publikoa.
   - Nodoa dagoen IPa edo domeinua.
   - Konexioak entzuteko erabiltzen dituen TCP eta UDP portuak.
@@ -685,7 +691,7 @@ Horrela, APIko edozein metodo dei dezakezu informazioa eskuratzeko edo administr
 
 ## 4.5 Segurtasuna Blockchain sareetan
 
-Errepasa ditzagun blockchain sarean ezar daitezkeen segurtasun-ezaugarri eta neurri nagusiak.
+Errepasa ditzagun blockchain sarean ezar daitezkeen segurtasun-ezaugarri eta neurri nagusiak. Batzuk dagoeneko ezarri ditugu gure sarean, eta beste batzuk ekoizpen-ingurunean hedatzeko iradokizun gisa geratzen dira.
 
 ### Autentifikazioa eta baimena
 
@@ -739,8 +745,8 @@ Errepasa ditzagun blockchain sarean ezar daitezkeen segurtasun-ezaugarri eta neu
 
 ### Tresnak
 
-- Besuren log-ak.
-- Ethstats.
+- Besuren log-ak (`docker logs` erabiliz).
+- Ethstats (web aplikazioa erabiliz).
 - Prometheus + Grafana metriketarako (gure hedapenean ez dago inplementatuta).
 - Alertak: komeni da honelako egoeretarako alertak definitzea: "peer kopurua atalase baten azpitik", "blokeen ekoizpena geldirik", "sinkronizazio falta" edo "CPU, memoria edo disko erabilera handia" (gure hedapenean ez dago inplementatuta).
 
@@ -750,25 +756,25 @@ Errepasa ditzagun blockchain sarean ezar daitezkeen segurtasun-ezaugarri eta neu
 - Diskoko espazioa eta datuen zein log-en hazkundea zaintzea, ustekabeko geldialdiak saihesteko.
 - Aldaketa bakoitzaren ondoren egiaztatzea nodoak sinkronizatuta jarraitzen duela, peer-ak mantentzen dituela eta RPC bidez ondo erantzuten duela.
 
-**Ariketa: bosgarren nodo bat gehitu sarera eta balidatzaile bihurtu gainerako nodoen bozken bidez. Bi zati: bosgarren nodo bat gehitu eta balidatzaile bihurtu.**
+**Ariketa: 1.- bosgarren nodo bat gehitu sarera eta  2.- Balidatzaile bihurtu gainerako nodoen bozken bidez.**
 
 Bosgarren nodo bat gehitzeko honako hau egin beharko duzu:
 
 - Nodoaren gakoak eta helbidea sortu (*besu* komandoa). Kopiatu gako hori **key5** gisa `networkFiles/keys` karpetara.
-- Sortu `JWT_5` fitxategia `networkFiles/JWTkeys` karpetan (daudenen kopia bat bakarrik sortu; hedapen honetan guztiak berdinak izango dira sinpletasunagatik).
+- Sortu `JWT_5` fitxategia `networkFiles/JWTkeys` karpetan (daudenen kopia bat bakarrik sortu; hedapen honetan guztiak berdinak izango dira sinpletasunagatik). Ez da beharrezkoa egitea.
 - Gehitu *enode*-a *static-nodes.json* eta *nodes_permissions_config.toml* fitxategietan.
-- Aldatu `inventory.yml` fitxategia nodo berria gehitzeko. Printzipioz ez dugu Ansible Playbook-a ukitu behar, prozedura bera baita.
+- Aldatu *inventory.yml* fitxategia nodo berria gehitzeko. Printzipioz ez dugu Ansible Playbook-a ukitu behar, prozedura bera baita.
 - Sortu 5. nodora egokitutako `docker-compose5.yml` berria.
 - Exekutatu Ansible Playbook-a.
 - Egiaztatu Ethstats-en nodo berria sarearen parte dela.
-- Entregatu: Ethstats-en kaptura bat, 5 nodoak martxan eta blokeak sortzen ikusten diren tokian (azken blokea sortu zenetik igarotako denborak 10s baino txikiagoa izan behar du).
+- **Entregatu:** Ethstats-en kaptura bat, 5 nodoak martxan eta blokeak sortzen ikusten diren tokian (azken blokea sortu zenetik igarotako denborak 10s baino txikiagoa izan behar du).
 
 Bosgarren nodoa balidatzaile bihurtzea:
 
 - Egiaztatu (aurrez ikusitako WebSocket komandoa `qbft_getValidatorsByBlockNumber` erabiliz) 5 nodo izan arren blokeak 4 nodo desberdinek bakarrik balidatzen dituztela, jatorrizko 4ek.
 - Bilatu [dokumentazioan](https://besu.hyperledger.org/private-networks/reference/api#qbft-methods) zein komando exekutatu behar den jada balidatzaile diren nodoetan nodo berria balidatzaile gisa proposatzeko.
 - Exekutatu bosgarren nodoa balidatzaile gisa gehitzeko behar diren komandoak.
-- Entregatu: kaptura bat non nodo berria sortutako azken blokeko balidatzaileen artean dagoela ikusten den (komandoa gehi erantzuna).
+- **Entregatu:** kaptura bat non nodo berria sortutako azken blokeko balidatzaileen artean dagoela ikusten den (komandoa gehi erantzuna).
 
 ---
 
@@ -785,9 +791,11 @@ Kontuan izan konfigurazio-fitxategi ia guztiak ukituko direla eta berriz sortu e
 
 Hedapenerako, gomendatzen da Ansible bidezko hedapen-fitxategi daudenetan (*hedapena-AnsiblePlaybook.yml* eta *inventory.yml*) aldaketa txikiak egitea, ariketara egokitzeko.
 
-Makinak 'birsortu' ditzakezu hasierako egoerara itzul daitezen eta hedapen garbi bat egiteko (hedatuta edo aldatuta dagoena ezabatuko da):
+Makinak 'birsortu' hasierako egoerara itzul daitezen eta hedapen garbi bat egiteko (hedatuta edo aldatuta dagoena ezabatuko da):
 
 ![Recreate](../baliabideak/recreate.jpg)
+
+'Besu node 3-5' makinak **itzaltzea** gomendatzen da, ez direlako behar eta piztuta badaude beraien egoeran datuak egon daitezke bidaltzen Ethstats-era.
 
 **Entregatu: 1.- Ethstats-en kaptura(k), bi nodoak aktibo eta blokeak sortzen ikusten direnak, eta `Active Nodes` atalean (goian eskuinean) 2/2 agertzen dena**
 

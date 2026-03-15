@@ -1,5 +1,4 @@
-# Inventory for Hedapena Besu network and web server deployment.
-# Run from repository root: ansible-playbook -i Hedapena/inventory.yml Hedapena/hedapena-AnsiblePlaybook.yml
+# Inventario para despliegue de nodos Besu y servidor web.
 
 all:
   children:

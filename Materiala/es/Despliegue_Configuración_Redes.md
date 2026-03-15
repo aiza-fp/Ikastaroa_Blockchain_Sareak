@@ -10,8 +10,6 @@ Este documento trata los conceptos fundamentales sobre qué es una Blockchain y 
 
 ## 1.1 ¿Qué es Blockchain?
 
-### Definición formal
-
 **Blockchain** es una base de datos distribuida, inmutable y descentralizada que mantiene un registro ordenado de transacciones agrupadas en bloques y enlazadas criptográficamente.
 
 ### Analogía didáctica: El libro de contabilidad compartido
@@ -38,11 +36,11 @@ Imagina un libro de contabilidad que:
 | **Control** | Un administrador decide qué se guarda | Consenso distribuido entre nodos |
 | **Modificación** | Se pueden actualizar o borrar registros | Solo se añaden nuevos bloques; el historial es inmutable |
 | **Confianza** | Se confía en el administrador | Se confía en la criptografía y el protocolo |
-| **Rendimiento** | Muy alto (miles de TPS) | Limitado por el consenso (típicamente cientos de TPS en redes privadas) |
+| **Rendimiento** | Muy alto, miles de transacciones por segundo (TPS) | Limitado por el consenso (típicamente cientos de TPS en redes privadas) |
 
 ---
 
-## 1.2 Arquitectura básica de una red Blockchain
+## 1.2 Arquitectura básica de una red blockchain
 
 ### Componentes principales
 
@@ -182,7 +180,7 @@ Los Smart Contracts se escriben típicamente en **Solidity**, un lenguaje de alt
 
 **Flujo típico:** El desarrollador escribe `MiContrato.sol` → el compilador genera el bytecode (`MiContrato.bytecode`) y el ABI (`MiContrato.abi`)→ el bytecode se despliega en la red → las aplicaciones usan el ABI para construir y enviar transacciones que llaman a las funciones del contrato.
 
-**Importante – Versión de la EVM:** La EVM evoluciona con cada hard fork (London, Shanghai, Cancún, etc.). Cada red define en su `genesis.json` qué versión de EVM activa (por ejemplo, mediante bloques de activación de EIPs). Es **crucial compilar el contrato con la versión de EVM adecuada a la red** donde se desplegará. Si compilamos para una EVM más nueva que la de la red, el bytecode puede usar opcodes inexistentes y la transacción fallará. Si compilamos para una EVM más antigua, perdemos optimizaciones o funcionalidades. En Solidity se especifica con `pragma solidity ^0.8.0` y, en el compilador, con la opción `--evm-version` (ej. `paris`, `shanghai`).
+**Importante – Versión de la EVM:** La EVM evoluciona con cada hard fork (London, Shanghai, Cancún, etc.). Cada red define en su `genesis.json` qué versión de EVM activa. Es **crucial compilar el contrato con la versión de EVM adecuada a la red** donde se desplegará. Si compilamos para una EVM más nueva que la de la red, el bytecode puede usar opcodes inexistentes y la transacción fallará. Si compilamos para una EVM más antigua, perdemos optimizaciones o funcionalidades. En Solidity se especifica con `pragma solidity ^0.8.0` y, en el compilador, con la opción `--evm-version` (ej. `paris`, `shanghai`).
 
 ### Arquitectura de pila (Stack-based)
 
@@ -357,7 +355,7 @@ Todo el código fuente se encuentra en https://github.com/aiza-fp/Ikastaroa_Bloc
 
 Las máquinas están desplegadas para cada usuario en https://vdi.tknika.eus/login
 
-Las cuatro máquinas virtuales denominadas 'Besu nodo 1-5' son máquinas Ubuntu Server donde lo único que se ha configurado es la dirección IP fija y el nombre del servidor. Lo que necesitemos instalar para la puesta en marcha de los nodos de la red blockchain se hará en el despliegue mediante **Ansible**.
+Las cinco máquinas virtuales denominadas 'Besu nodo 1-5' (**solamente se van a utilizar 4 en este despliegue**) son máquinas Ubuntu Server donde lo único que se ha configurado es la dirección IP fija y el nombre del servidor. Lo que necesitemos instalar para la puesta en marcha de los nodos de la red blockchain se hará en el despliegue mediante **Ansible**.
 
 La máquina virtual denominada 'Ubuntu Desktop' es un Ubuntu de escritorio donde lo único que se ha configurado es la dirección IP fija y se ha instalado Ansible para hacer el despliegue. Parte del despliegue se hace en la misma máquina, que actúa como servidor web para aplicaciones que hacen uso de la blockchain.
 
@@ -375,7 +373,7 @@ Para el despliegue vamos a utilizar la máquina denominada 'Ubuntu Desktop' sigu
 
 3.- Primero comprobamos la conectividad a las máquinas. Para ello con el primer comando añadimos sus claves a la lista de máquinas conocidas y con el segundo comando verificamos que Ansible tiene acceso a ellas (tenemos que recibir un SUCCESS por cada máquina):
 
-`ssh-keyscan -t ed25519 -H 192.168.100.1 192.168.100.2 192.168.100.3 192.168.100.4 >> ~/.ssh/known_hosts`
+`ssh-keyscan -t ed25519 -H 192.168.100.1 192.168.100.2 192.168.100.3 192.168.100.4 192.168.100.5 >> ~/.ssh/known_hosts`
 
 `ansible -i Hedapena/inventory.yml -m ping all --ask-pass`
 
@@ -393,15 +391,19 @@ Podemos comprobar que la red está en marcha accediendo a la dirección `localho
 
 ![Ethstats](../baliabideak/ethstats.jpg)
 
-Ésto es lo que ha ocurrido en el proceso de despliegue con Ansible:
+Esto es lo que ha ocurrido en el proceso de despliegue con Ansible:
 
 1. Antes de nada todo el código necesario para el despliegue e instalación lo hemos descargado de [Github](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak) con el el comando `git clone ...`.
 
+
 2. Las máquinas implicadas en el despliegue están definidas en el fichero [`Hedapena/inventory.yml`](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak/blob/main/Hedapena/inventory.yml) del repositorio. Ahí es donde se define su IP y están clasificadas por grupos (besu_nodes, webserver) para diferenciarlos a la hora de desplegar los contenidos.
+
 
 3. Como Ansible necesita acceso *ssh* a las máquinas, mediante el comando `ssh-keyscan` hemos añadido las máquinas remotas a la lista de máquinas conocidas y con el comando `ansible -i Hedapena/inventory.yml -m ping all --ask-pass` hemos comprobado que tiene acceso a las máquinas implicadas en el despliegue.
 
+
 4. Ejecutamos el **playbook** de Ansible definido en [`Hedapena/hedapena-AnsiblePlaybook.yml`](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak/blob/main/Hedapena/hedapena-AnsiblePlaybook.yml). El playbook consiste el llevar a cabo tres tareas:
+
 
    4.1. Instalar Docker y Docker Compose en todas las máquinas: mediante la propiedad 'hosts: all_servers' se indica que afecta a todas las máquinas definidas en el inventario. Se solicita la contraseña del usuario 'isard' y se ejecutan 4 subtareas:
 
@@ -409,55 +411,64 @@ Podemos comprobar que la red está en marcha accediendo a la dirección `localho
     - Instalar los paquetes docker.io y docker-compose-v2.
     - Iniciar el servicio Docker.
     - Añadir el usuario 'isard' al grupo 'docker'.
-  
+
+
    4.2. Desplegar el servidor web e inicar los servicios: mediante la propiedad 'hosts: webserver' se indica que las tareas asociadas se van a llevar a cabo solamente en las máquinas que pertenezcan al grupo webserver, en este caso la máquina con IP 192.168.100.10 que es la misma que estamos utilizando para realizar el despliegue. Las subtareas son:
-    - Crear la carpeta 'besu'.
-    - Copiar la carpeta 'WebServer' dentro de la carpeta 'besu' en destino.
-    - Copiar la carpeta 'Pilotoak' dentro de la carpeta 'besu' en destino.
-    - Asegurarse de que la carpeta 'besu' en destino y todas las subcarpetas pertenecen al usuario 'isard'.
+    - Crear la carpeta 'web'.
+    - Copiar la carpeta 'WebServer' dentro de la carpeta 'web' en destino.
+    - Copiar la carpeta 'Pilotoak' dentro de la carpeta 'web' en destino.
+    - Asegurarse de que la carpeta 'web' en destino y todas las subcarpetas pertenecen al usuario 'isard'.
     - Mediante Docker iniciar el servidor web y otros servicios definidos en el fichero WebServer/docker-compose.yml
 
-   4.3. Desplegar Hyperledger Besu el los cuatro nodos: mediante la propiedad 'hosts: besu_nodes' se indica que las tareas asociadas se van a llevar a cabo solamente en las máquinas que pertenezcan al grupo besu_nodes. Las subtareas son:
+
+   4.3. Desplegar Hyperledger Besu el los cuatro nodos: mediante la propiedad 'hosts: besu_nodes' se indica que las tareas asociadas se van a llevar a cabo solamente en las máquinas que pertenezcan al grupo *besu_nodes*. Las subtareas son:
     - Crear la estructura de carpetas necesaria en ~/besuNode.
-    - Copiar los ficheros de Hedapena que son comunes a todos los nodos.
+    - Copiar los ficheros que son comunes a todos los nodos.
     - Copiar los ficheros específicos de cada nodo (utilizando el índice).
     - Asegurarse de que la carpeta 'besuNode' en destino y todas las subcarpetas pertenecen al usuario 'isard'.
-    - Mediante Docker iniciar Besu en cada máquina. En este caso, como para cada máquina hay que desplegar un fichero distinto, se hace referencia al número en el nombre de fichero con el número de índice definido en `inventory.yml`.
+    - Mediante Docker iniciar Besu en cada máquina. En este caso, como para cada máquina hay que desplegar un fichero distinto, se hace referencia al número en el nombre de fichero con el número de índice definido en *inventory.yml*.
 
-Como ejercicios se plantean:
+**El ejercicio consiste en:**
 
-1. Sigue todos los pasos descritos para desplegar la red blockchain preconfigurada. Entrega una captura del Ethstats con todos los nodos en marcha y generando bloques.
+**1.** Sigue todos los pasos descritos para desplegar la red blockchain preconfigurada.
+Entrega una captura del Ethstats con todos los nodos en marcha y generando bloques.
 
-2. Accede a uno de los nodos (mediante ssh desde el Ubuntu Desktop para mayor comodidad) y echar abajo el servicio manualmente para observar que la red sigue creando bloques.
-    * Ejecuta `ssh isard@192.168.100.1` y dentro de la carpeta besuNode `docker compose -f docker-compose1.yml down`
-    * Sal de la conexión al servidor con `exit`.
-    * Observa Ethstats en el navegador.
-    * Entrega una captura del Ethstats con 3 nodos en marcha pero creando bloques ('Last block' con menos de 10 segundos).
 
-3. Accede a otro de los nodos y echa abajo el servicio para observar que la red ya no produce más bloques.
-    * Ejecuta `ssh isard@192.168.100.2` y dentro de la carpeta besuNode `docker compose -f docker-compose2.yml down`
-    * Sal de la conexión al servidor con `exit`.
-    * Observa Ethstats en el navegador.
-    * Entrega una captura del Ethstats con 2 nodos en marcha y sin crear nuevos bloques ('Last block' con más de 10 segundos).
+**2.** Accede a uno de los nodos (mediante ssh desde el Ubuntu Desktop para mayor comodidad) y echar abajo el servicio manualmente para observar que la red sigue creando bloques.
+  - Ejecuta `ssh isard@192.168.100.1` y dentro de la carpeta besuNode `docker compose -f docker-compose1.yml down`
+  - Sal de la conexión al servidor con `exit`.
+  - Observa Ethstats en el navegador.
+  - Entrega una captura del Ethstats con 3 nodos en marcha pero creando bloques ('Last block' con menos de 10 segundos).
 
-4. Reactiva el servicio en los dos nodos para ver que la red ha retomado la creación de bloques (puede tardar un tiempo en retomar la creación de nuevos bloques, unos 5 minutos en este entorno).
-    * Ejecuta `ssh isard@192.168.100.1` y dentro de la carpeta besuNode `docker compose -f docker-compose1.yml up -d`
-    * Sal de la conexión al servidor con `exit`.
-    * Ejecuta `ssh isard@192.168.100.2` y dentro de la carpeta besuNode `docker compose -f docker-compose2.yml up -d`
-    * Sal de la conexión al servidor con `exit`.
-    * Observa Ethstats en el navegador.
-    * Entrega una captura del Ethstats con todos los nodos en marcha y generando bloques (el número de bloque tendrá que ser mayor que el de la captura del apartado anterior y 'Last block' con menos de 10 segundos).
 
-5. Despliega un Smart Contract. Para comprobar que nuestra red ya está operativa y se pueden hacer transacciones, vamos a ejecutar un script que despliega e invoca un contrato ya compilado:
-    * Ve a la carpeta de contratos con `cd ~/Ikastaroa_Blockchain_Sareak/Garapena/Kontratuak/Formularioak`. Ahí se encuentran los ficheros *.sol*, *.abi* y *.bytecode* de un contrato llamado Formularioak.
-    * Ejecuta `python ./hedatu_erabili.py`.
-    * Identifica en los mensajes la dirección donde se ha desplegado el contrato y cópialo del terminal (Ctrl. + Mayúsc. + C).
-    * Abre con el navegador el fichero `trazabilitatea.html` que se encuentra en la misma carpeta e introduce la dirección del contrato. El número de formulario es 1.
-    * Entrega una captura de la página web donde se vea que se ha recuperado los datos del formulario para ese contrato.
+**3.** Accede a otro de los nodos y echa abajo el servicio para observar que la red ya no produce más bloques.
+  - Ejecuta `ssh isard@192.168.100.2` y dentro de la carpeta besuNode `docker compose -f docker-compose2.yml down`
+  - Sal de la conexión al servidor con `exit`.
+  - Observa Ethstats en el navegador.
+  - Entrega una captura del Ethstats con 2 nodos en marcha y sin crear nuevos bloques ('Last block' con más de 10 segundos).
 
-6.- Utiliza un explorador de bloques e identifica dónde están los datos de una transacción. La útima transacción del ejercicio anterior actualiza el formulario 1 con la información 'Dato final 1' y 'Dato final 2'. Se puede ver en qué número de bloque ha ocurrido esa transacción.
-    * Accede en el navegador a `esploratzaile.localhost` y busca el número de bloque donde ha ocurrido esa transacción.
-    *Entrega una captura con los datos de ese bloque. Tienen que aparecer 'Dato final 1' y 'Dato final 2'.
+
+**4.** Reactiva el servicio en los dos nodos para ver que la red ha retomado la creación de bloques (puede tardar un tiempo en retomar la creación de nuevos bloques, unos 5 minutos en este entorno).
+  - Ejecuta `ssh isard@192.168.100.1` y dentro de la carpeta besuNode `docker compose -f docker-compose1.yml up -d`
+  - Sal de la conexión al servidor con `exit`.
+  - Ejecuta `ssh isard@192.168.100.2` y dentro de la carpeta besuNode `docker compose -f docker-compose2.yml up -d`
+  - Sal de la conexión al servidor con `exit`.
+  - Observa Ethstats en el navegador.
+  - Entrega una captura del Ethstats con todos los nodos en marcha y generando bloques (el número de bloque tendrá que ser mayor que el de la captura del apartado anterior y 'Last block' con menos de 10 segundos).
+
+
+**5.** Despliega un Smart Contract. Para comprobar que nuestra red ya está operativa y se pueden hacer transacciones, vamos a ejecutar un script que despliega e invoca un contrato ya compilado:
+  - Ve a la carpeta de contratos con `cd ~/Ikastaroa_Blockchain_Sareak/Garapena/Kontratuak/Formularioak`. Ahí se encuentran los ficheros *.sol*, *.abi* y *.bytecode* de un contrato llamado Formularioak.
+  - Ejecuta `python ./hedatu_erabili.py`.
+  - Identifica en los mensajes la dirección donde se ha desplegado el contrato y cópialo del terminal (Ctrl. + Mayúsc. + C).
+  - Abre con el navegador el fichero `trazabilitatea.html` que se encuentra en la misma carpeta e introduce la dirección del contrato. El número de formulario es 1.
+  - Entrega una captura de la página web donde se vea que se ha recuperado los datos del formulario para ese contrato.
+
+
+**6.** Utiliza un explorador de bloques e identifica dónde están los datos de una transacción. La útima transacción del ejercicio anterior actualiza el formulario 1 con la información 'Dato final 1' y 'Dato final 2'. Se puede ver en qué número de bloque ha ocurrido esa transacción.
+  - Accede en el navegador a `esploratzaile.localhost` y busca el número de bloque donde ha ocurrido esa transacción.
+  - Entrega una captura con los datos de ese bloque. Tienen que aparecer 'Dato final 1' y 'Dato final 2'.
+
 
 En la próxima sección estudiaremos dónde se han configurado los distintos aspectos de la red blockchain desplegada.
 
@@ -465,17 +476,18 @@ En la próxima sección estudiaremos dónde se han configurado los distintos asp
 
 # Parte 4: Configuración de redes Blockchain
 
-## 4.1 Software necesario en las máquinas.
+## 4.1 Software necesario en las máquinas
 
 La máquina Ubuntu Desktop con la que estamos trabajando ya trae instalado lo siguiente:
 
-- Ansible
-- Java 25
+- Ansible (para el despliegue)
+- Java 25 (para utilizar las herramientas de Besu)
 - Hyperledger Besu 26.2.0 (el software con las herramientas, no un nodo)
+- Python (para ejecutar el despliegue del smart-contract y generar algunas claves)
 
 Las máquinas Ubuntu Server (Besu node 1-5) no traen nada instalado.
 
-## 4.2 Estructura y contenido de los ficheros de configuración en los nodos Besu:
+## 4.2 Estructura y contenido de los ficheros de configuración en los nodos Besu
 
 En nuestro caso estamos desplegando una red Hyperledger Besu en cuatro nodos.
 
@@ -494,11 +506,11 @@ Partiendo de este fichero veamos su relación con los demás ficheros fundamenta
   - **publicRSAKeyOperator.pem**: clave pública usada para verificar los tokens de acceso JWT.
   - **[static-nodes.json](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak/blob/main/Hedapena/networkFiles/static-nodes.json)**: fichero con la lista de nodos conocidos con los que conectarse al arrancar. El listado consiste en las direcciones *enode* que corresponden a los nodos (**clave pública + IP:puerto**).
   - **[nodes_permissions_config.toml](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak/blob/main/Hedapena/networkFiles/nodes_permissions_config.toml)**: si en *node-config.toml* hemos activado el permisionado por nodos, en este fichero se indican las direcciones de los nodos que tienen permiso para comunicarse con este nodo. El listado consiste en las direcciones *enode* que corresponden a los nodos (**clave pública + IP:puerto**)
-  - **[accounts_permissions_config.toml](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak/blob/main/Hedapena/networkFiles/accounts_permissions_config.toml)**: si en *node-config.toml* hemos activado el permisionado por direcciones, en este fichero se indican las direcciones que tienen permiso para enviar transacciones al nodo (desactivado por defecto en nuestro caso).
+  - **[accounts_permissions_config.toml](https://github.com/aiza-fp/Ikastaroa_Blockchain_Sareak/blob/main/Hedapena/networkFiles/accounts_permissions_config.toml)**: si en *node-config.toml* hemos activado el permisionado por direcciones, en este fichero se indican las direcciones que tienen permiso para enviar transacciones al nodo (desactivado en nuestro caso).
 
 - **networkFiles/keys/keyX**: clave privada de cada nodo que lo identifica de forma única.
 
-## 4.3 Creación de ficheros con herramientas de Besu y scripts:
+## 4.3 Creación de ficheros con herramientas de Besu y scripts
 
 ### Generar nuevas direcciones
 
@@ -600,7 +612,9 @@ En Besu hay varias formas de conseguir que un nodo encuentre a otros nodos de la
 
 > **Efecto de la opción `discovery-enabled`:** Cuando está activada (en *node-config.toml*), el nodo puede descubrir nuevos peers automáticamente a partir de otros nodos conocidos. Cuando está desactivada, el nodo no hace ese descubrimiento dinámico y depende mucho más de listas explícitas como `static-nodes.json`.
 
-- **Enode:** Es una URL que identifica de forma única un nodo de Ethereum/Besu, e incluye:
+
+- Enode:
+  Es una URL que identifica de forma única un nodo de Ethereum/Besu, e incluye:
   - La clave pública del nodo.
   - La IP o dominio donde reside el nodo.
   - El puerto TCP y UDP donde escucha conexiones.
@@ -663,14 +677,14 @@ Veamos un ejemplo de cada uno:
   Un 3, es decir, que el nodo tiene 3 peers.
 
   - Websocket puerto 8546 con autorización: es algo más complejo, tenemos que utilizar un programa (*websocat*, ya instalado) para iniciar la comunicación añadiéndole el token JWT_1 en la solicitud y luego invocar métodos. Sigue estos pasos para probarlo:
-
+    
     `cd ~`
-
+    
     `./websocat -H="Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJwZXJtaXNzaW9ucyI6WyIqOioiXSwicHJpdmFjeVB1YmxpY0tleSI6IjdxSHJ0RG85TVc0UHRPSXgrTkJDWWNqTTNqN0UzaU0rYUExL20rNmpzbnM9IiwiZXhwIjoxNjAwODk5OTk5MDAyfQ.drZxJPRxE3AQ5z5ws8gJ2E_q0zUqZM82QdXp1DREuXcdyskL0eqTCs0OVwvarlWpxFXJzXShEYzinNeLZrfPZHGReDYoQMoSuTNaI34REsVQ8zUqvUt2J9UNklKnGzOXZlZ6Z0nTVD69DviIb-GrLwJ4eiqLi9-AeqSI90DlQmubIuhLJZHPH0Y7NOWvLOJ-jcUddFGmzl9wonAnsmwBM3YDbpA3bWFtp5Cb8ZQox073-7kWmNjImnUljr8Uut_j1xdc5fIJxIBez7Q1v4rkia0SXSd6fC5OL7A9OgEiYmt7Xus8at__3luhVJfNIU8DaHFnXWtfosZgLtAa4Vykbw" ws://192.168.100.2:8546`
 
     Con eso iniciamos una conexión websocket al nodo 2, que se queda a la espera de comandos. Fíjate en que el formato es: `./websocat -H="Authorization: TOKEN_JWT" ws://192.168.100.2:8546`. Se ha utilizado el token JWT_2 en este caso (aunque son todos iguales en la red desplegada, por simplicidad)
 
-    Cuando se quede a la espera de nuevo comandos, escribimos por ejemplo:
+    Cuando se quede a la espera de nuevos comandos, escribimos por ejemplo:
 
     `{"jsonrpc":"2.0","method":"qbft_getValidatorsByBlockNumber","params":["latest"], "id":1}`
 
@@ -686,7 +700,7 @@ De esta forma ya puedes invocar cualquier método de la API para obtener informa
 
 ## 4.5 Seguridad en redes Blockchain
 
-Repasemos las principales características y medidas de seguridad que se pueden implementar en la red blockchain.
+Repasemos las principales características y medidas de seguridad que se pueden implementar en la red blockchain. Algunas ya las hemos implementado en nuestra red y otras quedan como sugerencias para un despliegue en entorno de producción.
 
 ### Autenticación y autorización
 
@@ -742,8 +756,8 @@ Repasemos las principales características y medidas de seguridad que se pueden 
 
 ### Herramientas
 
-- Logs de Besu.
-- Ethstats.
+- Logs de Besu (mediante `docker logs`)
+- Ethstats (mediante la aplicación web).
 - Prometheus + Grafana para métricas (no implementado en nuestro despliegue).
 - Alertas: Conviene definir alertas para situaciones como “número de peers por debajo de un umbral”, “bloqueo en la producción de bloques”, “falta de sincronización” o “uso elevado de CPU, memoria o disco” (no implementado en nuestro despliegue).
 
@@ -753,18 +767,18 @@ Repasemos las principales características y medidas de seguridad que se pueden 
 - Vigilar el espacio en disco y el crecimiento de datos y logs para evitar paradas inesperadas.
 - Verificar después de cada cambio que el nodo sigue sincronizado, mantiene peers y responde correctamente por RPC.
 
-**Ejercicio: añadir un quinto nodo a la red y convertirlo en validador con votos en los demás nodos. Dos partes: añadir un quinto nodo y convertirlo en validador.**
+**Ejercicio: 1.- añadir un quinto nodo a la red y  2.- Convertirlo en validador con votos en los demás nodos.**
 
 Para añadir un quinto nodo tendrás que:
 
 - Crear las claves y dirección del nodo (comando *besu*). Copiar esa clave como **key5** a networkFiles/keys
-- Crear el fichero JWT_5 en networkFiles/JWTkeys (solamente crear una copia de los existentes, van a ser todos iguales en este despliegue por simplicidad)
+- Crear el fichero JWT_5 en networkFiles/JWTkeys (solamente crear una copia de los existentes, van a ser todos iguales en este despliegue por simplicidad). No es imprescindible.
 - Añadir el *enode* a los ficheros *static-nodes.json* y *nodes_permissions_config.toml*.
 - Modificar el fichero *inventory.yml* para añadir el nuevo nodo. En principio no necesitamos tocal el Playbook de Ansible porque el procedimiento es el mismo.
 - Crear un nuevo docker-compose5.yml adaptado al nodo 5.
 - Ejecutar el Playbook de Ansible.
 - Comprobar en Ethstats que el nuevo nodo forma parte de la red.
-- Entrega: una captura del Ethstats donde se vean los 5 nodos en funcionamiento y creando bloques (el tiempo desde que se creó el último bloque tiene que ser menor de 10s.)
+- **Entrega:** una captura del Ethstats donde se vean los 5 nodos en funcionamiento y creando bloques (el tiempo desde que se creó el último bloque tiene que ser menor de 10s.)
 
 Convertir el quinto nodo en validador:
 
@@ -781,16 +795,18 @@ Este apartado es un ejercicio final que consiste en hacer un nuevo despliegue te
 - 2 nodos (las direcciones IP son 192.168.100.1-2).
 - Las claves propias de cada nodo son nuevas y distintas entre sí.
 - Los token JWT son distintos en cada nodo y generados a partir de claves privadas distintas.
-- Los 2 nodos exisitirán desde el principio como validadores y solamente ellos pueden participar en la red.
+- Los 2 nodos existirán desde el principio como validadores y solamente ellos pueden participar en la red.
 - El tiempo entre bloques será de 20 segundos.
 
 Ten en cuenta que prácticamente todos los ficheros de configuración se verán afectados y hay que recrearlos.
 
 Para el despliegue se recomienda hacer pequeñas modificaciones a los ficheros existentes de despliegue con Ansible (*hedapena-AnsiblePlaybook.yml* y *inventory.yml*) para adaptarlo al ejercicio. 
 
-Puedes 'recrear' las máquinas para que vuelvan a su estado inicial y hacer un despliegue limpio (se eliminará lo que esté desplegado o modificado):
+Recrea las máquinas para que vuelvan a su estado inicial y hacer un despliegue limpio (se eliminará lo que esté desplegado o modificado):
 
 ![Recreate](../baliabideak/recreate.jpg)
+
+Se recomienda **apagar** las máquinas 'Besu node 3-5' dado que no hacen falta  y si están en marcha pueden estar mandando datos a Ethstats. 
 
 **Entrega: 1.- Captura(s) del Ethstats donde se vean los dos nodos activos, generando bloques y en el apartado 'Active Nodes' (arriba a la derecha) se ve 2/2** 
 
