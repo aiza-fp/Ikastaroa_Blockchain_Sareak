@@ -472,10 +472,10 @@ Hurrengo atalean aztertuko dugu non konfiguratu diren hedatutako blockchain sare
 
 Erabiltzen ari garen Ubuntu Desktop makinak jada honako hau dakar instalatuta:
 
-- Ansible (hedapena egiteko)
+- Ansible 2.17.14 (hedapena egiteko)
 - Java 25 (Besu erremintak erabiltzeko)
 - Hyperledger Besu 26.2.0 (softwarea eta tresnak, ez nodo bat)
-- Python (smart-contract baten hedapena egiteko eta klabe batzuk sortzeko)
+- Python 3.10.12 (smart-contract baten hedapena egiteko eta klabe batzuk sortzeko)
 
 Ubuntu Server makinek ('Besu node 1-5') ez dute ezer instalatuta.
 
@@ -773,8 +773,8 @@ Bosgarren nodoa balidatzaile bihurtzea:
 
 - Egiaztatu (aurrez ikusitako WebSocket komandoa `qbft_getValidatorsByBlockNumber` erabiliz) 5 nodo izan arren blokeak 4 nodo desberdinek bakarrik balidatzen dituztela, jatorrizko 4ek.
 - Bilatu [dokumentazioan](https://besu.hyperledger.org/private-networks/reference/api#qbft-methods) zein komando exekutatu behar den jada balidatzaile diren nodoetan nodo berria balidatzaile gisa proposatzeko.
-- Exekutatu bosgarren nodoa balidatzaile gisa gehitzeko behar diren komandoak.
-- **Entregatu:** kaptura bat non nodo berria sortutako azken blokeko balidatzaileen artean dagoela ikusten den (komandoa gehi erantzuna).
+- Exekutatu gutxienex 3 nodotan (gehiengoa) bosgarren nodoa balidatzaile gisa gehitzeko behar den komandoa. Orain 5 balidatzaile agertu behar dira bloke berrietan.
+- **Entregatu:** kaptura bat non nodo berria sortutako azken blokeko balidatzaileen artean dagoela ikusten den (komandoa gehi erantzuna). Guztira 5 balidatzaile agertu behar dira orain.
 
 ---
 
@@ -782,22 +782,26 @@ Bosgarren nodoa balidatzaile bihurtzea:
 
 Atal hau azken ariketa bat da, eta orain arte ikusitako guztia kontuan hartuta hedapen berri bat egitean datza. Egin beharreko hedapenaren ezaugarriak hauek dira:
 - 2 nodo (IP helbideak 192.168.100.1-2 dira).
+- Blokeen arteko denbora 20 segundokoa izango da.
 - Nodo bakoitzaren gako propioak berriak eta elkarren artean desberdinak izango dira.
 - JWT tokenak desberdinak izango dira nodo bakoitzean, eta gako pribatu desberdinetatik sortuak.
-- 2 nodoak hasieratik bertatik balidatzaile izango dira, eta haiek bakarrik parte hartu ahal izango dute sarean.
-- Blokeen arteko denbora 20 segundokoa izango da.
+- Bi nodoek bakarrik parte hartu ahal izango dute sarean.
+- Estatistikak Ethstats-era nodo izen hauekin bidaltzen dituzte: *2nodeNetwork_1* eta *2nodeNetwork_2*
+
 
 Kontuan izan konfigurazio-fitxategi ia guztiak ukituko direla eta berriz sortu egin beharko direla.
 
-Hedapenerako, gomendatzen da Ansible bidezko hedapen-fitxategi daudenetan (*hedapena-AnsiblePlaybook.yml* eta *inventory.yml*) aldaketa txikiak egitea, ariketara egokitzeko.
+Hedapenerako, gomendatzen da Ansible bidezko hedapen-fitxategietan (*hedapena-AnsiblePlaybook.yml* eta *inventory.yml*) aldaketa txikiak egitea, ariketara egokitzeko.
 
-Makinak 'birsortu' hasierako egoerara itzul daitezen eta hedapen garbi bat egiteko (hedatuta edo aldatuta dagoena ezabatuko da):
+**1 eta 2 makinak 'birsortu'** hasierako egoerara itzul daitezen eta hedapen garbi bat egiteko (hedatuta edo aldatuta dagoena ezabatuko da):
 
 ![Recreate](../baliabideak/recreate.jpg)
 
-'Besu node 3-5' makinak **itzaltzea** gomendatzen da, ez direlako behar eta piztuta badaude beraien egoeran datuak egon daitezke bidaltzen Ethstats-era.
+**'Besu node 3-5' makinak itzali**, ez direlako behar eta piztuta badaude beraien egoeran datuak egon daitezke bidaltzen Ethstats-era.
 
-**Entregatu: 1.- Ethstats-en kaptura(k), bi nodoak aktibo eta blokeak sortzen ikusten direnak, eta `Active Nodes` atalean (goian eskuinean) 2/2 agertzen dena**
+Oharra: behin hedapena eginda, errorerik ez badago, sareak 10-15 minutu hartu ditzake blokeak sortzen hasi arte baina Ethstats-en bi nodoak hasieratik ikusi beharko lirateke.
+
+**Entregatu: Ethstats-en kaptura(k) pdf fitxategi batean, bi nodoak aktibo eta blokeak sortzen ikusten direnak, eta 'Active Nodes' atalean (goian eskuinean) 2/2 agertzen dena**
 
 ---
 

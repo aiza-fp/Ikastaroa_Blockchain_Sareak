@@ -480,10 +480,10 @@ En la próxima sección estudiaremos dónde se han configurado los distintos asp
 
 La máquina Ubuntu Desktop con la que estamos trabajando ya trae instalado lo siguiente:
 
-- Ansible (para el despliegue)
+- Ansible 2.17.14 (para el despliegue)
 - Java 25 (para utilizar las herramientas de Besu)
 - Hyperledger Besu 26.2.0 (el software con las herramientas, no un nodo)
-- Python (para ejecutar el despliegue del smart-contract y generar algunas claves)
+- Python 3.10.12 (para ejecutar el despliegue del smart-contract y generar algunas claves)
 
 Las máquinas Ubuntu Server (Besu node 1-5) no traen nada instalado.
 
@@ -784,7 +784,7 @@ Convertir el quinto nodo en validador:
 
 - Comprueba (comando de Websocket `qbft_getValidatorsByBlockNumber` visto anteriormente)que a pesar de tener 5 nodos, los bloques solamente los validan 4 nodos distintos, los 4 originales.
 - Busca en la [documentación](https://besu.hyperledger.org/private-networks/reference/api#qbft-methods) qué comando hay que ejecutar en los nodos que ya son validadores para proponer el nuevo nodo como validador.
-- Ejecuta los comandos necesarios para añadir el quinto nodo como validador.
+- Ejecuta el comando necesario en al menos 3 nodos (mayoría) para añadir el quinto nodo como validador. Ahora en los nuevos bloques tienen que aparece 5 nodos como validadores.
 - Entrega: una captura en la que se vea que el nuevo nodo está entre los validadores del último bloque producido (el comando más la respuesta)
 
 ---
@@ -793,22 +793,26 @@ Convertir el quinto nodo en validador:
 
 Este apartado es un ejercicio final que consiste en hacer un nuevo despliegue teniendo en cuenta todo lo todo lo visto hasta ahora. Las características del despliegue a realizar son éstas:
 - 2 nodos (las direcciones IP son 192.168.100.1-2).
+- El tiempo entre bloques será de 20 segundos.
 - Las claves propias de cada nodo son nuevas y distintas entre sí.
 - Los token JWT son distintos en cada nodo y generados a partir de claves privadas distintas.
-- Los 2 nodos existirán desde el principio como validadores y solamente ellos pueden participar en la red.
-- El tiempo entre bloques será de 20 segundos.
+- Solamente esos dos nodos pueden participar en la red.
+- Las estadísticas al Ethstats los nodos las mandan con estos nombres: *2nodeNetwork_1* y *2nodeNetwork_2*
+
 
 Ten en cuenta que prácticamente todos los ficheros de configuración se verán afectados y hay que recrearlos.
 
 Para el despliegue se recomienda hacer pequeñas modificaciones a los ficheros existentes de despliegue con Ansible (*hedapena-AnsiblePlaybook.yml* y *inventory.yml*) para adaptarlo al ejercicio. 
 
-Recrea las máquinas para que vuelvan a su estado inicial y hacer un despliegue limpio (se eliminará lo que esté desplegado o modificado):
+**Recrea las máquinas 1 y 2** para que vuelvan a su estado inicial y hacer un despliegue limpio (se eliminará lo que esté desplegado o modificado):
 
 ![Recreate](../baliabideak/recreate.jpg)
 
-Se recomienda **apagar** las máquinas 'Besu node 3-5' dado que no hacen falta  y si están en marcha pueden estar mandando datos a Ethstats. 
+**Apaga las máquinas 'Besu node 3-5'** dado que no hacen falta y si están en marcha pueden estar mandando datos a Ethstats.
 
-**Entrega: 1.- Captura(s) del Ethstats donde se vean los dos nodos activos, generando bloques y en el apartado 'Active Nodes' (arriba a la derecha) se ve 2/2** 
+Nota: una vez hecho el despliegue, si no hay errores, la red puede tardar unos 10-15 minutos en empezar a generar bloques pero los dos nodos deberían verse en Ethstats.
+
+**Entrega: captura(s) del Ethstats donde se vean los dos nodos activos, generando bloques (tiempo desde el último bloque < 20 segundos) y en el apartado 'Active Nodes' (arriba a la derecha) se ve 2/2** 
 
 ---
 
